@@ -1,5 +1,5 @@
 from struct import pack, unpack
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 fieldmeta = dict[str, Any]
