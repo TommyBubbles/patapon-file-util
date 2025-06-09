@@ -39,6 +39,34 @@ class PataponDataClass:
                 new_value = raw_values[pos]
             setattr(new_inst, name, new_value)
         return new_inst
+    
+
+    def to_bytes(self):
+        cls = self.__class__
+        pos_list: list[int] = cls._field_starts()
+        values = list(b"" for _ in range(cls._pack_size()))
+
+        for name, field in cls.__dataclass_fields__.items():
+            metadata: fieldmeta = field.metadata
+            
+            pos: int = pos_list[metadata["pos"]]
+            value = getattr(self, name)
+
+            if metadata["type"] == "s":
+                values[pos] = str(value).encode(metadata["encoding"])
+            elif metadata["type"] == "i":
+                filler_values = metadata.get("values", -1)
+
+                # only really used for filler at this point
+                if filler_values != -1:
+                    for i in range(0, metadata["values"]):
+                        values[pos+i] = list(value)[i]
+                else:
+                    values[pos] = value
+            else:
+                values[pos] = value
+                
+        return pack(cls.format_string(), *values)
             
             
     @classmethod
@@ -61,6 +89,7 @@ class PataponDataClass:
 
     @classmethod
     def _field_starts(cls) -> list[int]:
+        """only used with from_bytes and to_bytes"""
         size_list = list(0 for _ in cls.__dataclass_fields__.values())
 
         for field in cls.__dataclass_fields__.values():
@@ -80,6 +109,24 @@ class PataponDataClass:
         
         return pos_list
     
+
+    @classmethod
+    def _pack_size(cls):
+        """only used with to_bytes function"""
+        size = 0
+        for field in cls.__dataclass_fields__.values():
+            metadata: fieldmeta = field.metadata
+            field_type = metadata["type"]
+            if field_type == 's':
+                field_size = 1
+            elif field_type == 'i':
+                field_size = metadata.get("values", 1)
+            else:
+                field_size = 1
+            size += field_size
+        return size
+
+
     @classmethod
     def verify_filler(cls, obj: 'PataponDataClass') -> bool:
         zeroflag = True
