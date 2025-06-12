@@ -34,3 +34,9 @@ with open(".\\test\\files\\@unit010_01_01\\@nodenamelist\\unit010_01_01_h.dat", 
     raw = file.read()
     test_class = NodeNameParam.from_bytes(raw)
     print(NodeNameParam.verify_filler(test_class))
+
+
+with open(".\\test\\files\\@egg001_01\\@model\\gimc620.gxt", "rb") as file:
+    raw = file.read()
+    test_class = GXT.from_bytes(raw)
+    print(GXT.verify_filler(test_class))
