@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field 
-from .patapon_data_class import PataponDataClass
+from .patapon_data_class import PataponStaticDataClass
 
 @dataclass
-class CharaParam(PataponDataClass):
-    byte_order = "<"
+class CharaParam(PataponStaticDataClass):
     internal_name: str = field(metadata={"pos": 0, "type": "s", "size": 0x20, "encoding": "utf-8"})
     internal_id: int = field(metadata={"pos": 1, "type": "i"})
     i1: int = field(metadata={"pos": 2, "type": "i"})

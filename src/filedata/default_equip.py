@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field 
-from .patapon_data_class import PataponDataClass
+from .patapon_data_class import PataponStaticDataClass
 
 @dataclass
-class DefaultEquip(PataponDataClass):
-    byte_order = "<"
+class DefaultEquip(PataponStaticDataClass):
     file_name: str = field(metadata={"pos": 0, "type": "s", "size": 0x20, "encoding": "utf-8"})
     i1: int = field(metadata={"pos": 1, "type": "i"})
     filler_1: list[int] = field(metadata={"pos": 2, "type": "i", "values": 4})
