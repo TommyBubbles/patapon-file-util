@@ -1,5 +1,6 @@
 from dataclasses import field, dataclass
-from typing import Callable
+from PIL import Image
+from math import sqrt
 from .patapon_data_class import (
     PataponDataClassHeader,
     PataponDataClassBody,
@@ -62,7 +63,7 @@ class GXTPaletteHeader(PataponDataClassHeader, PataponStaticDataClass):
 
 @dataclass
 class GXTPaletteBody(PataponDataClassBody, PataponDynamicDataClass):
-    raw_palette: bytes = field(metadata={"pos": 0, "type": "s", "tag": "palette_size", "tag_type": "size"})
+    palette: list[bytes] = field(metadata={"pos": 0, "type": "s", "tag": "palette_size", "tag_type": "hex_size", "element_size": 0x4, "byte_order": ">"})
 
 
     def __init__(self):
@@ -88,7 +89,7 @@ def get_padding(used: int, total: int) -> int:
 @dataclass
 class Unknown2Body(PataponDataClassBody, PataponDynamicDataClass):
     fl1: list[float] = field(metadata={"pos": 0, "type": "f", "tag": "unk2_used_size", "tag_type": "hex_size"})
-    padding_1: list[None] = field(metadata={"pos": 1, "type": "x", "tag": "unk2_total_size", "tag_type": "func", "func": get_padding, "func_args": {"total": "unk2_total_size", "used": "unk2_used_size"}})
+    padding_1: bytes = field(metadata={"pos": 1, "type": "x", "tag": "unk2_total_size", "tag_type": "func", "func": get_padding, "func_args": {"total": "unk2_total_size", "used": "unk2_used_size"}})
     
 
     def __init__(self):
@@ -137,3 +138,28 @@ class GXT(PataponDynamicDataClass):
 
     def __init__(self):
         super().__init__()
+
+
+    def decompressed_image(self) -> bytes:
+        image: bytes = self.image_body.raw_image
+        palette: list[bytes] = self.palette_body.palette
+        palette_size: int = len(palette)
+        
+        result_image: bytes = b''
+        if palette_size == 16:
+            for byte in image:
+                top_nibble = (byte & 0xF0) >> 4
+                bottom_nibble = byte & 0x0F
+
+                result_image += palette[bottom_nibble] + palette[top_nibble]
+        else:
+            for byte in image:
+                result_image += palette[byte]
+
+        return result_image
+    
+
+    def render_image(self) -> Image.Image:
+        decomp_image = self.decompressed_image()
+        side_len = int(sqrt(len(decomp_image) >> 2))
+        return Image.frombytes('RGBA', (side_len, side_len), decomp_image)
