@@ -3,8 +3,13 @@ sys.path.insert(0, ".\\src")
 from patapon.filedata import EquipParam
 
 
-def test_equip_param_file_one_from_bytes():
-    with open(".\\test\\files\\@hlm001_01\\equipparam.dat", "rb") as file:
+def test_verify_datafield_pos_equip_param():
+    assert EquipParam.verify_datafield_pos()
+
+
+def test_from_bytes_equip_param_file_one():
+    file_name = ".\\test\\files\\@hlm001_01\\equipparam.dat"
+    with open(file_name, "rb") as file:
         raw = file.read()
         actual = EquipParam.from_bytes(raw)
         assert EquipParam.verify_filler(actual)

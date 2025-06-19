@@ -1,21 +1,17 @@
 from dataclasses import dataclass, field 
-from .patapon_data_class import PataponStaticDataClass
+from .patapon_data_class import PataponStaticDataClass, FieldMetadata
 
 @dataclass
 class NodeNameParam(PataponStaticDataClass):
-    file_name: str = field(metadata={"pos": 0, "type": "s", "size": 0x20, "encoding": "utf-8"})
-    i1: int = field(metadata={"pos": 1, "type": "i"})
-    filler_1: list[int] = field(metadata={"pos": 2, "type": "i", "values": 3})
-    i2: int = field(metadata={"pos": 3, "type": "i"})
-    i3: int = field(metadata={"pos": 4, "type": "i"})
-    filler_2: list[int] = field(metadata={"pos": 5, "type": "i", "values": 2})
-    s1: str = field(metadata={"pos": 6, "type": "s", "size": 0x20, "encoding": "utf-8"})
-    s2: str = field(metadata={"pos": 7, "type": "s", "size": 0x20, "encoding": "utf-8"})
-    s3: str = field(metadata={"pos": 8, "type": "s", "size": 0x20, "encoding": "utf-8"})
-    node_name: str = field(metadata={"pos": 9, "type": "s", "size": 0x20, "encoding": "utf-8"})
-    node_type: str = field(metadata={"pos": 10, "type": "s", "size": 0x20, "encoding": "utf-8"})
-    s4: str = field(metadata={"pos": 11, "type": "s", "size": 0x20, "encoding": "utf-8"})
-
-
-    def __init__(self):
-        super().__init__()
+    file_name: str = field(default='', metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="utf-8")})
+    i1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
+    filler_1: list[int] = field(default_factory=list, metadata={"meta": FieldMetadata("unsigned_int", 2, count=3)})
+    i2: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
+    i3: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 4)})
+    filler_2: list[int] = field(default_factory=list, metadata={"meta": FieldMetadata("unsigned_int", 5, count=2)})
+    s1: str = field(default='', metadata={"meta": FieldMetadata("string", 6, size=0x20, encoding="utf-8")})
+    s2: str = field(default='', metadata={"meta": FieldMetadata("string", 7, size=0x20, encoding="utf-8")})
+    s3: str = field(default='', metadata={"meta": FieldMetadata("string", 8, size=0x20, encoding="utf-8")})
+    node_name: str = field(default='', metadata={"meta": FieldMetadata("string", 9, size=0x20, encoding="utf-8")})
+    node_type: str = field(default='', metadata={"meta": FieldMetadata("string", 10, size=0x20, encoding="utf-8")})
+    s4: str = field(default='', metadata={"meta": FieldMetadata("string", 11, size=0x20, encoding="utf-8")})

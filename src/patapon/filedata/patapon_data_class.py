@@ -103,20 +103,6 @@ class FieldMetadata():
         return count
 
 
-    def get_tag_by_type(self, type: FieldTagType) -> FieldTag | None:
-        for tag in self.tags:
-            if tag.tag_type == type:
-                return tag
-        return None
-        
-
-    def get_tag_by_name(self, name: str) -> FieldTag | None:
-        for tag in self.tags:
-            if tag.name == name:
-                return tag
-        return None
-
-
 class PataponDataClassHeader:
     _start_pos: int
 
@@ -177,22 +163,25 @@ class PataponDataClass:
 
 
     @classmethod
-    def find_name_by_tag(cls, tag: str, *_, type_search: FieldType | None = None, exclude: str | None = None) -> list[str]:
+    def get_field_name_by_tag_name(cls, tag_name: str, *_, type_search: FieldType | None = None, exclude: str | None = None) -> list[str]:
         results = []
 
         for name, field in cls.__dataclass_fields__.items():
             metadata: FieldMetadata = field.metadata["meta"]
-            if metadata.get_tag_by_name(tag) == tag and \
-               (type_search == None or metadata.field_type == type_search) and \
-               (exclude == None or name != exclude):
-                results.append(name)
-        
+            tags: list[FieldTag] = field.metadata["tags"]
+            for tag in tags:
+                if tag.name == tag_name and \
+                        (type_search == None or metadata.field_type == type_search) and \
+                        (exclude == None or name != exclude):
+                    results.append(name)
+                    break
+            
         return results
     
 
     @classmethod
-    def find_value_by_tag(cls, obj: 'PataponDataClass', tag: str) -> Any | None:
-        fields = obj.find_name_by_tag(tag)
+    def get_field_value_by_tag_name(cls, obj: 'PataponDataClass', tag: str) -> Any:
+        fields = cls.get_field_name_by_tag_name(tag)
         if len(fields) == 1:
             field_value = getattr(obj, fields[0])
         elif len(fields) > 1:
@@ -200,6 +189,34 @@ class PataponDataClass:
         else:
             field_value = None
         return field_value
+
+
+    @classmethod
+    def get_tag_by_type(cls, tag_type: FieldTagType) -> FieldTag | None:
+        results: list[FieldTag] = []
+
+        for name, field in cls.__dataclass_fields__.items():
+            tags: list[FieldTag] = field.metadata["tags"]
+            for tag in tags:
+                if tag.tag_type == tag_type:
+                    results.append(tag)
+                    break
+            
+        return results[0]
+        
+
+    @classmethod
+    def get_tag_by_name(cls, name: str) -> FieldTag | None:
+        results: list[FieldTag] = []
+
+        for name, field in cls.__dataclass_fields__.items():
+            tags: list[FieldTag] = field.metadata["tags"]
+            for tag in tags:
+                if tag.name == name:
+                    results.append(tag)
+                    break
+            
+        return results[0]
 
 
     @classmethod
@@ -358,7 +375,7 @@ class PataponDynamicDataClass(PataponDataClass):
             elif field_type == FieldType.body:
                 field_class = field.type
                 # find the matching header class for body
-                headers = cls.find_name_by_tag(field.metadata["tag"], type_search=FieldType.header, exclude=name)
+                headers = cls.get_field_name_by_tag_name(field.metadata["tags"][0], type_search=FieldType.header, exclude=name)
                 new_header_name = headers[0] if len(headers) > 0 else None
                 if new_header_name is not None:
                     new_header = getattr(new_inst, new_header_name)
@@ -377,17 +394,16 @@ class PataponDynamicDataClass(PataponDataClass):
                 # primary types
                 size: int
                 count: int
-                metadata: FieldMetadata = field.metadata["meta"]
 
                 # get the size of the data field
-                size_tag = metadata.get_tag_by_type(FieldTagType.size)
+                size_tag = new_inst.get_tag_by_type(FieldTagType.size)
                 if size_tag is not None:
                     size = cls.eval_tag(new_inst, header, size_tag, name)
                 else:
                     size = metadata.size
 
                 # get the count of the data field
-                count_tag = metadata.get_tag_by_type(FieldTagType.count)
+                count_tag = new_inst.get_tag_by_type(FieldTagType.count)
                 if count_tag is not None:
                     count = cls.eval_tag(new_inst, header, count_tag, name)
                 else:
