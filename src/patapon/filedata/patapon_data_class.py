@@ -1,6 +1,6 @@
 from struct import pack, unpack, calcsize
-from dataclasses import dataclass, Field, field
-from typing import Any, Callable
+from dataclasses import dataclass, Field
+from typing import Any, Callable, get_origin, List
 from enum import Enum
 
 
@@ -16,9 +16,13 @@ class FieldType(Enum):
 
 
 class FieldTagType(Enum):
-    size = 0
-    hex_size = 1
-    count = 2
+    source = 0
+    size = 1
+    byte_size = 2
+    count = 3
+    byte_count = 4
+    header = 5
+    body = 6
 
 
 class FieldTag():
@@ -121,7 +125,6 @@ class PataponDataClassHeader:
 
 
 class PataponDataClassBody:
-    byte_order: str = ">"
     _start_pos: int
     _header: PataponDataClassHeader
 
@@ -156,6 +159,7 @@ class PataponDataClass:
     @classmethod
     def format_string(cls) -> str: ...
     def get_byte_size(self) -> int: ...
+    def get_tag_list(self) -> dict[str,str]: ...
 
 
     def __init__(self):
@@ -163,15 +167,19 @@ class PataponDataClass:
 
 
     @classmethod
-    def get_field_name_by_tag_name(cls, tag_name: str, *_, type_search: FieldType | None = None, exclude: str | None = None) -> list[str]:
+    def get_field_name_by_tag_name(cls, tag_name: str, *_,
+                                   field_type_search: FieldType | None = None,
+                                   tag_type_search: FieldTagType | None = None, 
+                                   exclude: str | None = None) -> list[str]:
         results = []
 
         for name, field in cls.__dataclass_fields__.items():
             metadata: FieldMetadata = field.metadata["meta"]
-            tags: list[FieldTag] = field.metadata["tags"]
+            tags: list[FieldTag] = field.metadata.get("tags", [])
             for tag in tags:
                 if tag.name == tag_name and \
-                        (type_search == None or metadata.field_type == type_search) and \
+                        (field_type_search is None or metadata.field_type == field_type_search) and \
+                        (tag_type_search is None or tag.tag_type == tag_type_search) and \
                         (exclude == None or name != exclude):
                     results.append(name)
                     break
@@ -180,8 +188,8 @@ class PataponDataClass:
     
 
     @classmethod
-    def get_field_value_by_tag_name(cls, obj: 'PataponDataClass', tag: str) -> Any:
-        fields = cls.get_field_name_by_tag_name(tag)
+    def get_field_value_by_tag_name(cls, obj: 'PataponDataClass', tag: str, *_, **kwargs) -> Any:
+        fields = cls.get_field_name_by_tag_name(tag, **kwargs)
         if len(fields) == 1:
             field_value = getattr(obj, fields[0])
         elif len(fields) > 1:
@@ -192,31 +200,33 @@ class PataponDataClass:
 
 
     @classmethod
-    def get_tag_by_type(cls, tag_type: FieldTagType) -> FieldTag | None:
+    def get_tag_by_type(cls, tag_type: FieldTagType, *_, field_name: str | None = None) -> FieldTag | None:
         results: list[FieldTag] = []
 
         for name, field in cls.__dataclass_fields__.items():
-            tags: list[FieldTag] = field.metadata["tags"]
+            tags: list[FieldTag] = field.metadata.get("tags", [])
             for tag in tags:
-                if tag.tag_type == tag_type:
+                if tag.tag_type == tag_type and \
+                    (field_name is None or name == field_name):
                     results.append(tag)
                     break
             
-        return results[0]
+        return results[0] if len(results) > 0 else None
         
 
     @classmethod
-    def get_tag_by_name(cls, name: str) -> FieldTag | None:
+    def get_tag_by_name(cls, tag_name: str, *_, exclude: str | None = None) -> FieldTag | None:
         results: list[FieldTag] = []
 
         for name, field in cls.__dataclass_fields__.items():
-            tags: list[FieldTag] = field.metadata["tags"]
+            tags: list[FieldTag] = field.metadata("tags", [])
             for tag in tags:
-                if tag.name == name:
+                if tag.name == tag_name and \
+                        (exclude is None or name != exclude):
                     results.append(tag)
                     break
             
-        return results[0]
+        return results[0] if len(results) > 0 else None
 
 
     @classmethod
@@ -242,6 +252,8 @@ class PataponDataClass:
                         if val != 0:
                             print(f"non-zero value found in {field}: {val}")
                             zeroflag = False
+                elif type(value) == PataponDataClass:
+                    zeroflag = cls.verify_filler(value)
                 else:
                     if value != 0:
                         print(f"non-zero value found in {field}: {value}")
@@ -346,6 +358,7 @@ class PataponStaticDataClass(PataponDataClass):
 
 
 class PataponDynamicDataClass(PataponDataClass):
+    tag_list: dict[FieldTag,str] = {}
     byte_order: str = "<"
     @classmethod
     def from_bytes(cls, raw: bytes, *_, header: PataponDataClassHeader | PataponDataClass | None = None) -> 'PataponDynamicDataClass':
@@ -374,9 +387,15 @@ class PataponDynamicDataClass(PataponDataClass):
                     data_size = new_value.get_byte_size()
             elif field_type == FieldType.body:
                 field_class = field.type
+                body_tag: FieldTag | None = cls.get_tag_by_type(FieldTagType.body, field_name=name)
+                
                 # find the matching header class for body
-                headers = cls.get_field_name_by_tag_name(field.metadata["tags"][0], type_search=FieldType.header, exclude=name)
-                new_header_name = headers[0] if len(headers) > 0 else None
+                if body_tag is not None:
+                    headers = cls.get_field_name_by_tag_name(body_tag.name, field_type_search=FieldType.header, tag_type_search=FieldTagType.header)
+                    new_header_name = headers[0] if len(headers) > 0 else None
+                else:
+                    new_header_name = None
+
                 if new_header_name is not None:
                     new_header = getattr(new_inst, new_header_name)
                 else:
@@ -396,18 +415,34 @@ class PataponDynamicDataClass(PataponDataClass):
                 count: int
 
                 # get the size of the data field
-                size_tag = new_inst.get_tag_by_type(FieldTagType.size)
+                size_tag = new_inst.get_tag_by_type(FieldTagType.size, field_name=name)
                 if size_tag is not None:
-                    size = cls.eval_tag(new_inst, header, size_tag, name)
+                    size = cls.eval_tag(new_inst, header, size_tag)
                 else:
                     size = metadata.size
 
                 # get the count of the data field
-                count_tag = new_inst.get_tag_by_type(FieldTagType.count)
+                count_tag = new_inst.get_tag_by_type(FieldTagType.count, field_name=name)
                 if count_tag is not None:
-                    count = cls.eval_tag(new_inst, header, count_tag, name)
+                    count = cls.eval_tag(new_inst, header, count_tag)
                 else:
                     count = metadata.count
+
+                # byte size and hex count are only really used in special cases
+                # where the size or count given by another field is the byte size
+                # of it rather then the element size or count.
+                # these should not be specified if their non-byte counterparts are given
+                byte_size_tag = new_inst.get_tag_by_type(FieldTagType.byte_size, field_name=name)
+                if byte_size_tag is not None:
+                    size = cls.eval_tag(new_inst, header, byte_size_tag) // count
+                
+                byte_count_tag = new_inst.get_tag_by_type(FieldTagType.byte_count, field_name=name)
+                if byte_count_tag is not None:
+                    if get_origin(field.type) is list and size == 1:
+                        element_size = calcsize(metadata.get_field_string())
+                    else:
+                        element_size = size
+                    count = cls.eval_tag(new_inst, header, byte_count_tag) // element_size
 
                 # construct the format string to be used with unpack function
                 field_format_string = f"{size}{metadata.get_field_string()}" * count
@@ -422,8 +457,10 @@ class PataponDynamicDataClass(PataponDataClass):
                 func: Callable = metadata.get_from_bytes_func()
                 if count > 1:
                     new_value = list(func(val) for val in new_values)
+                elif len(new_values) == 0:
+                    new_value = b'\x00' * size
                 else:
-                    new_value = new_values[0]
+                    new_value = func(new_values[0])
 
             # set the new value and remove processes value from the raw bytes
             setattr(new_inst, name, new_value)
@@ -432,8 +469,38 @@ class PataponDynamicDataClass(PataponDataClass):
         return new_inst
 
     @classmethod
-    def eval_tag(cls, new_inst: PataponDataClass, header: PataponDataClassHeader | PataponDataClass | None, tag: FieldTag, field_name: str) -> int:
-        return -1
+    def eval_tag(cls, new_inst: PataponDataClass, header: PataponDataClassHeader | PataponDataClass | None, tag: FieldTag) -> int:
+        if tag.func != None:
+            func: Callable[..., int]= tag.func
+            params = tag.func_params or {}
+            new_params = {}
+            for param_name, tag_name in params.items():
+                new_param_value = None
+                # check new instance for tag first
+                new_inst_field_value = cls.get_field_value_by_tag_name(new_inst, tag_name, tag_type_search=FieldTagType.source)
+                if new_inst_field_value is not None and type(new_inst_field_value) == int:
+                    new_param_value = new_inst_field_value
+
+                # check header for tag second
+                if new_param_value is None and isinstance(header, PataponDataClass):
+                    header_field_value = header.get_field_value_by_tag_name(header, tag_name, tag_type_search=FieldTagType.source)
+                    if header_field_value is not None and type(header_field_value) == int:
+                        new_param_value = header_field_value
+                
+                new_params[param_name] = new_param_value
+            return func(**new_params)
+        else: 
+            # check new instance for tag first
+            new_inst_field_value = cls.get_field_value_by_tag_name(new_inst, tag.name, tag_type_search=FieldTagType.source)
+            if new_inst_field_value is not None and type(new_inst_field_value) == int:
+                return new_inst_field_value
+
+            # check header for tag second
+            if isinstance(header, PataponDataClass):
+                header_field_value = header.get_field_value_by_tag_name(header, tag.name, tag_type_search=FieldTagType.source)
+                if header_field_value != None and type(header_field_value) == int:
+                    return header_field_value
+        raise LookupError(f"Unable to find tag {tag.name}")
 
 
     def to_bytes(self) -> bytes:

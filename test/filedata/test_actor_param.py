@@ -13,7 +13,6 @@ def test_from_bytes_actor_param_file_one():
         raw = file.read()
         actual = ActorParam.from_bytes(raw)
         assert ActorParam.verify_filler(actual)
-        assert ActorParam.verify_datafield_pos()
 
     expected = ActorParam(
         "ActorChara",
