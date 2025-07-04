@@ -9,6 +9,7 @@ from .patapon_data_class import (
     FieldMetadata,
     FieldTag
 )
+from .func.field_func import difference
 
 
 @dataclass
@@ -68,10 +69,6 @@ class GXTUnknown2Header(PataponDataClassHeader, PataponStaticDataClass):
     used_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1), "tags": [FieldTag("unk2_used_size", "source")]})
     total_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2), "tags": [FieldTag("unk2_total_size", "source")]})
     filler_2: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 3, count=13)})
-
-
-def difference(first: int, second: int) -> int:
-    return first - second
 
 
 @dataclass

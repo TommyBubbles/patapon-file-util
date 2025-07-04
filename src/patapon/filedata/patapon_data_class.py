@@ -1,31 +1,32 @@
 from struct import pack, unpack, calcsize
-from dataclasses import dataclass, Field
-from typing import Any, Callable, get_origin, List
-from enum import Enum
+from dataclasses import dataclass, Field, field
+from typing import Any, Callable, Union, get_origin, get_args
+from enum import Enum, auto
 
 
 class FieldType(Enum):
-    bytes = 0
-    string = 1
-    padding = 2
-    signed_int = 3
-    unsigned_int = 4
-    float = 5
-    header = 6
-    body = 7
+    bytes = auto()
+    string = auto()
+    padding = auto()
+    signed_int = auto()
+    unsigned_int = auto()
+    float = auto()
+    header = auto()
+    body = auto()
+    element_list = auto()
 
 
 class FieldTagType(Enum):
-    source = 0
-    size = 1
-    byte_size = 2
-    count = 3
-    byte_count = 4
-    header = 5
-    body = 6
+    source = auto()
+    size = auto()
+    byte_size = auto()
+    count = auto()
+    byte_count = auto()
+    header = auto()
+    body = auto()
 
 
-class FieldTag():
+class FieldTag:
     def __init__(self,
                  name: str,
                  tag_type: Any,
@@ -38,7 +39,7 @@ class FieldTag():
         self.func_params = func_params
 
 
-class FieldMetadata():
+class FieldMetadata:
     def __init__(self,
                  field_type: Any,
                  pos: int,
@@ -151,15 +152,34 @@ class PataponDataClassBody:
         self._header = value
 
 
+class PataponDataClassElement:
+    _offset: int
+    
+
+    def __init__(self):
+        pass
+
+
+    @property
+    def offset(self) -> int:
+        if hasattr(self, "_offset"):
+            return self._offset
+        return -1
+
+
+    @offset.setter
+    def offset(self, val: int) -> None:
+        self._offset = val
+
+
 @dataclass
 class PataponDataClass:
     @classmethod
-    def from_bytes(cls, raw: bytes, *, header: PataponDataClassHeader | None = ...) -> 'PataponDataClass': ...
+    def from_bytes(cls, raw: bytes, *, header: 'PataponDataClassHeader | PataponDataClass | None' = ...) -> 'PataponDataClass': ...
     def to_bytes(self) -> bytes: ...
     @classmethod
     def format_string(cls) -> str: ...
     def get_byte_size(self) -> int: ...
-    def get_tag_list(self) -> dict[str,str]: ...
 
 
     def __init__(self):
@@ -280,12 +300,27 @@ class PataponDataClass:
                 valid = False
 
         return valid
+    
+
+    def ordered_field_names(self):
+        return list(item[0] for item in self.__class__._ordered_dataclass_fields())
+
+
+    def tsv(self):
+        tsv_list = []
+        for name in self.ordered_field_names():
+            val: Any = getattr(self, name)
+            if isinstance(val, PataponDataClass):
+                tsv_list.extend(val.tsv())
+            else:
+                tsv_list.append(val)
+        return "\t".join(tsv_list)
 
 
 class PataponStaticDataClass(PataponDataClass):
     byte_order: str = "<"
     @classmethod
-    def from_bytes(cls, raw: bytes, *_, header: PataponDataClassHeader | None = None) -> 'PataponStaticDataClass':
+    def from_bytes(cls, raw: bytes, *_, **__) -> 'PataponStaticDataClass':
         new_inst = cls()
         format_string = cls.format_string()
 
@@ -361,7 +396,7 @@ class PataponDynamicDataClass(PataponDataClass):
     tag_list: dict[FieldTag,str] = {}
     byte_order: str = "<"
     @classmethod
-    def from_bytes(cls, raw: bytes, *_, header: PataponDataClassHeader | PataponDataClass | None = None) -> 'PataponDynamicDataClass':
+    def from_bytes(cls, raw: bytes, *_, header: Union[PataponDataClassHeader,PataponDataClass,None] = None) -> 'PataponDynamicDataClass':
         field_class: type[PataponDataClass]
         new_value: PataponDataClass | Any
         new_inst: PataponDynamicDataClass = cls()
@@ -409,6 +444,23 @@ class PataponDynamicDataClass(PataponDataClass):
                     # dynamic body
                     new_value = field_class.from_bytes(raw, header=new_header)
                     data_size = new_value.get_byte_size()
+            elif field_type == FieldType.element_list:
+                field_class = get_args(field.type)[0]
+                
+                count_tag = new_inst.get_tag_by_type(FieldTagType.count, field_name=name)
+                if count_tag is not None:
+                    count = cls.eval_tag(new_inst, header, count_tag)
+                else:
+                    count = metadata.count
+                
+                new_value = []
+                offset = 0
+                for _ in range(count):
+                    new_element: Union[PataponDataClass,PataponDataClassElement] = field_class.from_bytes(raw[offset:], header=header)
+                    new_element.offset = offset
+                    new_value.append(new_element)
+                    offset += new_element.get_byte_size()
+                data_size = offset
             else:
                 # primary types
                 size: int
@@ -529,3 +581,13 @@ class PataponDynamicDataClass(PataponDataClass):
             else:
                 raise NotImplementedError(f"uh oh, we are not supposed to be expecting other values in get_byte_size: {type(value)}")
         return size
+    
+
+def new_data_field(metadata: FieldMetadata, *_, field_type: type | None = None, tags: list[FieldTag] = []):
+    field_metadata = {
+        "meta": metadata,
+        "tags": tags
+    }
+    if field_type != None and issubclass(field_type, PataponDataClass):
+        return field(default_factory=field_type, metadata=field_metadata)
+    return field(default=None, metadata=field_metadata)
