@@ -1,0 +1,33 @@
+from dataclasses import dataclass, field 
+from ..patapon_data_class import PataponStaticDataClass, FieldMetadata
+
+@dataclass
+class CharaParam(PataponStaticDataClass):
+    internal_name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="utf-8")})
+    internal_id: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
+    i1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2)})
+    position_id_1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
+    type_1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 4)})
+    position_id_2: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5)})
+    f1: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 6)})
+    type_2: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7)})
+    position_id_3: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8)})
+    filler_1: list[int] = field(default_factory=list, metadata={"meta": FieldMetadata("unsigned_int", 9, count=33)})
+    f2: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 10)})
+    filler_2: list[int] = field(default_factory=list, metadata={"meta": FieldMetadata("unsigned_int", 11, count=2)})
+    big: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 12)})
+    i2: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 13)})
+    flying: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 14)})
+    filler_3: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 15)})
+    s1: str = field(default="", metadata={"meta": FieldMetadata("string", 16, size=0x20, encoding="utf-8")})
+    filler_4: list[int] = field(default_factory=list, metadata={"meta": FieldMetadata("unsigned_int", 17, count=16)})
+    model_internal_name: str = field(default="", metadata={"meta": FieldMetadata("string", 18, size=0x20, encoding="utf-8")})
+    class_data_file: str = field(default="", metadata={"meta": FieldMetadata("string", 19, size=0x20, encoding="utf-8")})
+    japenese_name: str = field(default="", metadata={"meta": FieldMetadata("string", 20, size=0x20, encoding="shift-jis")})
+    default_weapon: str = field(default="", metadata={"meta": FieldMetadata("string", 21, size=0x20, encoding="utf-8")})
+    hero_mode_icon: str = field(default="", metadata={"meta": FieldMetadata("string", 22, size=0x20, encoding="utf-8")})
+    s2: str = field(default="", metadata={"meta": FieldMetadata("string", 23, size=0x20, encoding="utf-8")})
+    s3: str = field(default="", metadata={"meta": FieldMetadata("string", 24, size=0x20, encoding="utf-8")})
+    filler_5: list[int] = field(default_factory=list, metadata={"meta": FieldMetadata("unsigned_int", 25, count=8)})
+    s4: str = field(default="", metadata={"meta": FieldMetadata("string", 26, size=0x20, encoding="utf-8")})
+    filler_6: list[int] = field(default_factory=list, metadata={"meta": FieldMetadata("unsigned_int", 27, count=24)})

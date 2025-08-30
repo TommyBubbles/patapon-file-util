@@ -1,0 +1,43 @@
+{# imports #}
+from pytest import fixture
+from patapon.filedata.{{ package_name }} import (
+{% for item in classes %}
+    {{ item["name"] }},
+{% endfor %}
+)
+
+{# base file testing class #}
+{% for file in files %}
+class Test{{ file["class_name"] }}:
+    @fixture
+    def {{ file["func_name"] }}(self) -> str:
+        return {{ file.file_path }}
+
+    {% for item in classes %}
+    
+    @fixture
+    def {{ item["func_base_name"] }}_{{ file["func_name"] }}(self{% for arg in item["class_args"] %},{{ arg["name"] }}_{{ file["func_name"] }}: {{ arg["type"] }}{% endfor %}) -> {{ item["name"] }}:
+        return {{ item["name"] }}(
+            {% for default_info in item.field_defaults %}
+            {{ default_info["value"] }}{% if default_info["isclass"] %}_{{ file["func_name"] }}{% endif %},
+            {% endfor %}
+        )
+    
+    {% endfor %}
+    {% for item in classes %}
+
+    def test_from_bytes_{{ item["func_base_name"] }}_{{ file["func_name"] }} (self, {{ file["func_name"] }}: str,
+                    {{ item["func_base_name"] }}_{{ file["func_name"] }}: {{ item["name"] }}):
+        assert {{ item["name"] }}.verify_datafield_pos()
+
+        with open({{ file["func_name"] }}, "rb") as file:
+            raw = file.read()
+            actual = {{ item["name"] }}.from_bytes(raw)
+            assert  {{ item["name"] }}.verify_filler(actual)
+
+        expected = {{ item["func_base_name"] }}_{{ file["func_name"] }}
+
+        assert actual == expected
+
+    {% endfor %}
+{% endfor %}
