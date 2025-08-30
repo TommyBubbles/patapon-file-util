@@ -16,7 +16,7 @@ class AbnormalStatusParamHeader(PataponStaticDataClass, PataponDataClassHeader):
 
 
 @dataclass
-class AbnormalStatusParamElement():
+class AbnormalStatusParamInfoElement():
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="shift-jis")})
     indexId: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
     filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 2, count=7)})
@@ -44,12 +44,12 @@ class AbnormalStatusParamElement():
 
 
 @dataclass
-class AbnormalStatusParamList(PataponDynamicDataClass, PataponDataClassBody):
-    info_list: list[AbnormalStatusParamElement] = field(default_factory=list[AbnormalStatusParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("param_count", "count")]})
+class AbnormalStatusParamInfo(PataponDynamicDataClass, PataponDataClassBody):
+    info_list: list[AbnormalStatusParamInfoElement] = field(default_factory=list[AbnormalStatusParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("param_count", "count")]})
 
 
 
 @dataclass
 class AbnormalStatusParam(PataponDynamicDataClass):
     header: AbnormalStatusParamHeader = field(default_factory=AbnormalStatusParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    params: AbnormalStatusParamList = field(default_factory=AbnormalStatusParamList, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    params: AbnormalStatusParamInfo = field(default_factory=AbnormalStatusParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
