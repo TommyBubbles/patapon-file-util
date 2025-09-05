@@ -34,11 +34,13 @@ class FieldTag:
     def __init__(self,
                  name: str,
                  tag_type: Any,
+                 pos: int | None = None,
                  *_,
                  func: Callable | None = None,
                  func_params: dict[str,str] | None = None):
         self.name = name
         self.tag_type = FieldTagType[tag_type]
+        self.pos = pos
         self.func = func
         self.func_params = func_params
 
@@ -270,6 +272,58 @@ class PataponDataClass:
 
 
     @classmethod
+    def add_tag_to_field(cls, name: str, tag: FieldTag):
+        field_info = cls.__dataclass_fields__.get(name, None)
+
+        if field_info is not None:
+            field_info.metadata["tags"].append(tag)
+
+
+    @classmethod
+    def eval_tag(cls, new_inst: 'PataponDataClass', header: 'PataponDataClass | None', tag: FieldTag) -> int:
+        def get_tag_value(check_cls: type[PataponDataClass], obj: PataponDataClass, tag_name: str):
+            obj_field_value = check_cls.get_field_value_by_tag_name(obj, tag_name, tag_type_search=FieldTagType.source)
+            if obj_field_value is not None:
+                if type(obj_field_value) == int:
+                    return obj_field_value
+                elif type(obj_field_value) == list and tag.pos != None:
+                    index_value = obj_field_value[tag.pos]
+                    if isinstance(index_value, PataponDataClass):
+                        return index_value.__class__.eval_tag(index_value, None, FieldTag("element_count", "source"))
+                    else:
+                        return index_value
+            return None
+
+        if tag.func != None:
+            func: Callable[..., int]= tag.func
+            params = tag.func_params or {}
+            new_params = {}
+            for param_name, tag_name in params.items():
+                new_param_value = None
+                # check new instance for tag first
+                new_param_value = get_tag_value(cls, new_inst, tag_name)
+
+                # check header for tag second
+                if new_param_value is None and isinstance(header, PataponDataClass):
+                    new_param_value = get_tag_value(header.__class__, header, tag_name)
+                
+                new_params[param_name] = new_param_value
+            return func(**new_params)
+        else: 
+            # check new instance for tag first
+            field_value = get_tag_value(cls, new_inst, tag.name)
+
+            # check header for tag second
+            if isinstance(header, PataponDataClass) and field_value is None:
+                field_value = get_tag_value(header.__class__, header, tag.name)
+
+            if field_value is not None:
+                return field_value
+            
+        raise LookupError(f"Unable to find tag {tag.name}")
+
+
+    @classmethod
     def _ordered_dataclass_fields(cls) -> list[tuple[str,Field] | tuple]:
         ordered: list[tuple[str,Field] | tuple] = list(() for _ in cls.__dataclass_fields__.values())
 
@@ -281,33 +335,42 @@ class PataponDataClass:
 
 
     @classmethod
-    def verify_filler(cls, obj: 'PataponDataClass') -> bool:
+    def verify_filler(cls, obj: 'PataponDataClass', *_, path: str = '') -> bool:
         zeroflag = True
         for field in cls.__dataclass_fields__.keys():
+            value = getattr(obj, field)
             if field.startswith('filler'):
-                value = getattr(obj, field)
-
-                if type(value) == list:
-                    for val in getattr(obj, field):
+                if isinstance(value, list):
+                    for val in value:
                         if val != 0:
-                            print(f"non-zero value found in {field}: {val}")
+                            print(f"non-zero value found in {path}{field}: {val}")
                             zeroflag = False
-                elif type(value) == PataponDataClass:
-                    zeroflag = cls.verify_filler(value)
-                else:
-                    if value != 0:
-                        print(f"non-zero value found in {field}: {value}")
-                        zeroflag = False
+                elif value != 0:
+                    print(f"non-zero value found in {path}{field}: {value}")
+                    zeroflag = False
+            elif isinstance(value, PataponDataClass):
+                value_cls = value.__class__
+                zeroflag = value_cls.verify_filler(value, path=path + field + ".")
+            elif isinstance(value, list):
+                for val in value:
+                    if isinstance(val, PataponDataClass):
+                        val_cls = val.__class__
+                        zeroflag = val_cls.verify_filler(val, path=path + field + ".")
         return zeroflag
     
 
     @classmethod
-    def verify_datafield_pos(cls):
+    def verify_datafield_pos(cls, path: str = ""):
         field_list: list[list] = list([] for _ in cls.__dataclass_fields__.values())
 
         for name, field in cls.__dataclass_fields__.items():
             metadata: FieldMetadata = field.metadata["meta"]
-            field_list[metadata.pos].append(name)
+            field_list[metadata.pos].append(f"{path}{name}")
+
+            if issubclass(field.type, PataponDataClass):
+                field.type.verify_datafield_pos(f"{path}{name}.")
+            elif get_origin(field.type) == list and issubclass(get_args(field.type)[0], PataponDataClass):
+                get_args(field.type)[0].verify_datafield_pos(f"{path}{name}.")
 
         valid = True
         for i in range(len(field_list)):
@@ -488,7 +551,6 @@ class PataponDynamicDataClass(PataponDataClass):
             elif field_type == FieldType.element_list:
                 field_class = get_args(field.type)[0]
                 
-
                 byte_size_tag = new_inst.get_tag_by_type(FieldTagType.byte_size, field_name=name)
                 if byte_size_tag is not None:
                     byte_size = cls.eval_tag(new_inst, header, byte_size_tag)
@@ -584,40 +646,6 @@ class PataponDynamicDataClass(PataponDataClass):
             raw = raw[data_size:]
         
         return new_inst
-
-    @classmethod
-    def eval_tag(cls, new_inst: PataponDataClass, header: PataponDataClassHeader | PataponDataClass | None, tag: FieldTag) -> int:
-        if tag.func != None:
-            func: Callable[..., int]= tag.func
-            params = tag.func_params or {}
-            new_params = {}
-            for param_name, tag_name in params.items():
-                new_param_value = None
-                # check new instance for tag first
-                new_inst_field_value = cls.get_field_value_by_tag_name(new_inst, tag_name, tag_type_search=FieldTagType.source)
-                if new_inst_field_value is not None and type(new_inst_field_value) == int:
-                    new_param_value = new_inst_field_value
-
-                # check header for tag second
-                if new_param_value is None and isinstance(header, PataponDataClass):
-                    header_field_value = header.get_field_value_by_tag_name(header, tag_name, tag_type_search=FieldTagType.source)
-                    if header_field_value is not None and type(header_field_value) == int:
-                        new_param_value = header_field_value
-                
-                new_params[param_name] = new_param_value
-            return func(**new_params)
-        else: 
-            # check new instance for tag first
-            new_inst_field_value = cls.get_field_value_by_tag_name(new_inst, tag.name, tag_type_search=FieldTagType.source)
-            if new_inst_field_value is not None and type(new_inst_field_value) == int:
-                return new_inst_field_value
-
-            # check header for tag second
-            if isinstance(header, PataponDataClass):
-                header_field_value = header.get_field_value_by_tag_name(header, tag.name, tag_type_search=FieldTagType.source)
-                if header_field_value != None and type(header_field_value) == int:
-                    return header_field_value
-        raise LookupError(f"Unable to find tag {tag.name}")
 
 
     def to_bytes(self) -> bytes:

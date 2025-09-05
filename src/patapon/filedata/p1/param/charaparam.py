@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from patapon.filedata.patapon_data_class import PataponStaticDataClass, FieldMetadata
-from patapon.filedata.p1 import DamageParam
+from patapon.filedata.p1.param import DamageParam
 
 
 @dataclass

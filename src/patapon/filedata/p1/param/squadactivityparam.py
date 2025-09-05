@@ -4,7 +4,7 @@ if __name__ == '__main__':
 
 from dataclasses import dataclass, field 
 from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
-from patapon.filedata.p1.damageparam import DamageParam
+from patapon.filedata.p1.param.damageparam import DamageParam
 
 
 @dataclass
@@ -75,26 +75,3 @@ class SquadActivityParam(PataponDynamicDataClass):
     header: SquadActivityParamHeader = field(default_factory=SquadActivityParamHeader, metadata={"meta": FieldMetadata("header", 0, data_size=0x40), "tags": [FieldTag("file", "header")]})
     base_param: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
     missile_param: MissileParam = field(default_factory=MissileParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
-
-
-
-
-if __name__ == '__main__':
-    SquadActivityParam.verify_datafield_pos()
-
-    with open("D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@gamedata\\@default\\@loadinggroupcmn\\@paramlist\\squadactivityparam.dat", "rb") as file:
-        raw = file.read()
-        actual: SquadActivityParam = SquadActivityParam.from_bytes(raw)
-        print(SquadActivityParam.verify_filler(actual))
-
-    print(len(actual.base_param.param_list) == 0xD5)
-    print(len(actual.missile_param.param_list) == 0x1B)
-
-    with open(".\\squad_activity_damage_param.txt", "w") as output:
-        output.write(f"{DamageParam().tsv_header()}\n")
-        for i in actual.base_param.param_list:
-            output.write(f"{i.damageParam.tsv()}\n")
-            # print(f"{i.name} {i.enableCharaType} {i.ctrlFuncParamId}")
-
-        for i in actual.missile_param.param_list:
-            print(i.name)

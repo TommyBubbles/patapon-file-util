@@ -1,17 +1,30 @@
-from dataclasses import dataclass, field 
+from enum import Enum
+from dataclasses import dataclass, field
 from patapon.filedata.patapon_data_class import (
     PataponStaticDataClass,
     FieldMetadata,
 )
 
+
+class AttackEffectType(Enum):
+    CRIT = 0
+    KB = 1
+    CNC = 2
+    FIRE = 3
+    SLEEP = 4
+    UKN_1 = 5
+    UKN_2 = 6
+    UKN_3 = 7
+
+
 @dataclass
 class DamageParam(PataponStaticDataClass):
     hitPoint: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 0)})
-    filler_1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
+    i1: float = field(default=0, metadata={"meta": FieldMetadata("float", 1)})
     moveSpeed: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
-    filler_2: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
+    i2: float = field(default=0, metadata={"meta": FieldMetadata("float", 3)})
     attackWait: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 4)})
-    filler_3:int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5)})
+    filler_3: float = field(default=0, metadata={"meta": FieldMetadata("float", 5)})
     knockBackDir: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 6)})
     isWeapon: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7)})
     minBaseDamage: float = field(default=0, metadata={"meta": FieldMetadata("float", 8)})
@@ -22,44 +35,9 @@ class DamageParam(PataponStaticDataClass):
     hitSeFlag: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 13)})
     attackFlag: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 14)})
     materialID: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 15)})
-    attackRatioCrit: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 16)})
-    attackRatioKB: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 17)})
-    attackRatioCNC: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 18)})
-    attackRatioFire: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 19)})
-    attackRatioSleep: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 20)})
-    attackRatio6: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 21)})
-    attackRatio7: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 22)})
-    attackRatio8: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 23)})
-    str1: str = field(default="", metadata={"meta": FieldMetadata("string", 24, size=0x20)})
-    sufferDamageRatio1: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 25)})
-    sufferDamageRatio2: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 26)})
-    sufferDamageRatio3: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 27)})
-    sufferDamageRatio4: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 28)})
-    sufferDamageRatio5: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 29)})
-    sufferDamageRatio6: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 30)})
-    sufferDamageRatio7: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 31)})
-    sufferDamageRatio8: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 32)})
-    sufferAttackAvoidanceRatioCrit: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 33)})
-    sufferAttackAvoidanceRatioKB: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 34)})
-    sufferAttackAvoidanceRatioCNC: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 35)})
-    sufferAttackAvoidanceRatioFire: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 36)})
-    sufferAttackAvoidanceRatioSleep: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 37)})
-    sufferAttackAvoidanceRatio6: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 38)})
-    sufferAttackAvoidanceRatio7: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 39)})
-    sufferAttackAvoidanceRatio8: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 40)})
-    sufferAvoidRatio1: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 41)})
-    sufferAvoidRatio2: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 42)})
-    sufferAvoidRatio3: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 43)})
-    sufferAvoidRatio4: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 44)})
-    sufferAvoidRatio5: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 45)})
-    sufferAvoidRatio6: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 46)})
-    sufferAvoidRatio7: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 47)})
-    sufferAvoidRatio8: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 48)})
-    sufferInvalid1: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 49)})
-    sufferInvalid2: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 50)})
-    sufferInvalid3: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 51)})
-    sufferInvalid4: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 52)})
-    sufferInvalid5: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 53)})
-    sufferInvalid6: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 54)})
-    sufferInvalid7: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 55)})
-    sufferInvalid8: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 56)})
+    attackRatio: list[float] = field(default_factory=list[float], metadata={"meta": FieldMetadata("float", 16, count=8)})
+    str1: str = field(default="", metadata={"meta": FieldMetadata("string", 17, size=0x20)})
+    sufferDamageRatio: list[float] = field(default_factory=list[float], metadata={"meta": FieldMetadata("float", 18, count=8)})
+    sufferAttackAvoidanceRatio: list[float] = field(default_factory=list[float], metadata={"meta": FieldMetadata("float", 19, count=8)})
+    sufferAvoidRatio: list[float] = field(default_factory=list[float], metadata={"meta": FieldMetadata("float", 20, count=8)})
+    sufferInvalid: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("signed_int", 21, count=8)})

@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0, ".\\src")
-from patapon.filedata.p1.gamedata.squadactivityparam import SquadActivityParam
+from patapon.filedata.p1.param import SquadActivityParam
 
 
 def test_verify_datafield_pos_actor_param():
