@@ -276,6 +276,8 @@ class PataponDataClass:
         field_info = cls.__dataclass_fields__.get(name, None)
 
         if field_info is not None:
+            if field_info.metadata.get("tags", None) == None:
+                field_info.metadata["tags"] = []
             field_info.metadata["tags"].append(tag)
 
 

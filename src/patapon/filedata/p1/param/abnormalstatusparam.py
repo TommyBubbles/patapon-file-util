@@ -1,17 +1,21 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
+from .generic import GenericParamHeader
+
 
 
 @dataclass
-class AbnormalStatusParamHeader(PataponStaticDataClass, PataponDataClassHeader):
-    magic: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
-    i1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
-    i2: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 4, count=3)})
-    param_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("param_count", "source")]})
-    param_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 6)})
-    filler_2: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 7, count=6)})
+class AbnormalStatusParamHeader(GenericParamHeader):
+    @classmethod
+    def add_tags(cls):
+        cls.add_tag_to_field("partition_info_list", FieldTag("abnormal_status_param_count", "source"))
 
 
 
@@ -47,7 +51,7 @@ class AbnormalStatusParamInfoElement(PataponStaticDataClass, PataponDataClassEle
 
 @dataclass
 class AbnormalStatusParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    info_list: list[AbnormalStatusParamInfoElement] = field(default_factory=list[AbnormalStatusParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("param_count", "count")]})
+    info_list: list[AbnormalStatusParamInfoElement] = field(default_factory=list[AbnormalStatusParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("abnormal_status_param_count", "count", 0)]})
 
 
 

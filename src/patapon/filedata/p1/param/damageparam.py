@@ -6,6 +6,7 @@ from patapon.filedata.patapon_data_class import (
 )
 
 
+
 class AttackEffectType(Enum):
     CRIT = 0
     KB = 1

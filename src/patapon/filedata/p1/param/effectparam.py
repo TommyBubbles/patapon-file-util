@@ -1,21 +1,22 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
-from patapon.filedata.p1.param import DamageParam
+from patapon.filedata.patapon_data_class import (
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
+from . import DamageParam
+from .generic import GenericParamHeader
 
 
 
 @dataclass
-class EffectParamHeader(PataponStaticDataClass, PataponDataClassHeader):
-    magic: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
-    i1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
-    partition_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 4, count=3)})
-    effect_param_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("effect_param_count", "source")]})
-    effect_param_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 6)})
-    effect_damage_param_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7), "tags": [FieldTag("effect_damage_param_count", "source")]})
-    effect_damage_param_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8)})
-    filler_2: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 9, count=4)})
+class EffectParamHeader(GenericParamHeader):
+    @classmethod
+    def add_tags(cls):
+        cls.add_tag_to_field("partition_info_list", FieldTag("effect_param_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("effect_damage_param_count", "source"))
 
 
 
@@ -51,7 +52,7 @@ class EffectParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class EffectParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[EffectParamInfoElement] = field(default_factory=list[EffectParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_param_count", "count")]})
+    param_list: list[EffectParamInfoElement] = field(default_factory=list[EffectParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_param_count", "count", 0)]})
 
 
 
@@ -63,7 +64,7 @@ class EffectDamageParamElement(PataponDynamicDataClass, PataponDataClassElement)
 
 @dataclass
 class EffectDamageParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[EffectDamageParamElement] = field(default_factory=list[EffectDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_damage_param_count", "count")]})
+    param_list: list[EffectDamageParamElement] = field(default_factory=list[EffectDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_damage_param_count", "count", 1)]})
 
 
 
@@ -72,3 +73,4 @@ class EffectParam(PataponDynamicDataClass):
     header: EffectParamHeader = field(default_factory=EffectParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
     effect_params: EffectParamInfo = field(default_factory=EffectParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
     effect_damage_params: EffectDamageParam = field(default_factory=EffectDamageParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    

@@ -1,8 +1,16 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassHeader,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
 
 
-# used by personparam
+
 @dataclass
 class FacilityParamHeader(PataponStaticDataClass, PataponDataClassHeader):
     id: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
@@ -106,6 +114,7 @@ class FacilityAttachParamList(PataponDynamicDataClass, PataponDataClassBody):
 
 
 
+# used by personparam
 @dataclass
 class FacilityParam(PataponDynamicDataClass):
     header: FacilityParamHeader = field(default_factory=FacilityParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})

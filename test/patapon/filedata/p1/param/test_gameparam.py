@@ -7,7 +7,7 @@ from patapon.filedata.p1.param.gameparam import (
     GameParamInfoElement
 )
 from patapon.filedata.p1.param.generic import (
-    GenericParamHeaderParitionInfo
+    GenericParamHeaderPartitionInfo
 )
 
 
@@ -28,7 +28,7 @@ def game_param_header() -> GameParamHeader:
         0x1,
         [0,0,0],
         [
-            GenericParamHeaderParitionInfo(0x1, 0x80)
+            GenericParamHeaderPartitionInfo(0x1, 0x80)
         ],
         b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
     )

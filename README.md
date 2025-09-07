@@ -1,3 +1,11 @@
+# TODO:
+## - combine fieldmetadata types body, header, and element_list into one class type (including logic)
+## - make the file header available to all classes within the main class
+## - combine PataponStaticDataClass and PataponDynamicDataClass into one class
+## - add logic for adding the pos to fieldtag that is attached to a list of PataponDataClass objects
+
+
+
 # patapon-file-util
 ## data file checklist:
 ### actor folder
@@ -131,24 +139,24 @@
 #### systemdata.bnd/default.bnd/loadinggroupcmn/modellist.bnd/system.mdll
 #### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd
 #### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/abnormalstatusparam.dat -> AbnormalStatusParam
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/carnivalpowerevalutateparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/carnivalpowerevalutateparambases.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/charabirthparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/charagroupparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/cookingparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/effectparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/gameparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/hiteffecttableparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/instructioncommandparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/laboparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/miracleparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/missionparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/particleparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/soundgameparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/soundparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/squadlineparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/systemparam.dat
-#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/unitparam.dat
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/carnivalpowerevalutateparam.dat -> CarnivalPowerEvalutateParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/carnivalpowerevalutateparambases.dat -> CarnivalPowerEvalutateParamBases
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/charabirthparam.dat -> CharaBirthParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/charagroupparam.dat -> CharaGroupParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/cookingparam.dat -> CookingParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/effectparam.dat -> EffectParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/gameparam.dat -> GameParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/hiteffecttableparam.dat -> HitEffectTableParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/instructioncommandparam.dat -> InstructionCommandParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/laboparam.dat -> LaboParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/miracleparam.dat -> MiracleParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/missionparam.dat -> SystemDataMissionParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/particleparam.dat -> ParticleParam 
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/soundgameparam.dat -> SoundGameParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/soundparam.dat -> SoundParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/squadlineparam.dat -> SquadLineParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/systemparam.dat -> SystemParam
+#### systemdata.bnd/default.bnd/loadinggroupcmn/paramlist.bnd/unitparam.dat -> UnitParam
 #### systemdata.bnd/default.bnd/loadinggroupcmn/scriptlist.bnd
 #### systemdata.bnd/default.bnd/loadinggroupcmn/scriptlist.bnd/effect.pac
 #### systemdata.bnd/default.bnd/loadinggroupcmn/scriptlist.bnd/itemtable.pac

@@ -1,23 +1,25 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
+from .generic import GenericParamHeader
 
 
+
+# Note: there is a value at 0x38 (0x30) that is not captured by this class.
+#       it is unclear as of right now if this will cause issues in the future
 @dataclass
-class CarnivalPowerEvalutateParamHeader(PataponStaticDataClass, PataponDataClassHeader):
-    magic: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
-    i1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
-    partition_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 4, count=3)})
-    global_settings_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("global_settings_count", "source")]})
-    global_settings_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 6)})
-    regular_settings_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7), "tags": [FieldTag("regular_settings_count", "source")]})
-    regular_settings_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8)})
-    common_param_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 9), "tags": [FieldTag("common_param_count", "source")]})
-    common_param_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 10)})
-    unknown_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 11), "tags": [FieldTag("unknown_count", "source")]})
-    unknown_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 12)})
-    filler_2: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 13, count=16)})
+class CarnivalPowerEvalutateParamHeader(GenericParamHeader):
+    @classmethod
+    def add_tags(cls):
+        cls.add_tag_to_field("partition_info_list", FieldTag("global_settings_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("regular_settings_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("common_param_count", "source"))
 
 
 
@@ -40,7 +42,7 @@ class CarnivalPowerEvalutateGlobalSettingsElement(PataponStaticDataClass, Patapo
 
 @dataclass
 class CarnivalPowerEvalutateGlobalSettings(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[CarnivalPowerEvalutateGlobalSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateGlobalSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("global_settings_count", "count")]})
+    settings_list: list[CarnivalPowerEvalutateGlobalSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateGlobalSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("global_settings_count", "count", 0)]})
 
 
 
@@ -63,7 +65,7 @@ class CarnivalPowerEvalutateRegularSettingsElement(PataponStaticDataClass, Patap
 
 @dataclass
 class CarnivalPowerEvalutateRegularSettings(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[CarnivalPowerEvalutateRegularSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateRegularSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("regular_settings_count", "count")]})
+    settings_list: list[CarnivalPowerEvalutateRegularSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateRegularSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("regular_settings_count", "count", 1)]})
 
 
 
@@ -83,7 +85,7 @@ class CarnivalPowerEvalutateCommonParamElement(PataponStaticDataClass, PataponDa
 
 @dataclass
 class CarnivalPowerEvalutateCommonParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CarnivalPowerEvalutateCommonParamElement] = field(default_factory=list[CarnivalPowerEvalutateCommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("common_param_count", "count")]})
+    param_list: list[CarnivalPowerEvalutateCommonParamElement] = field(default_factory=list[CarnivalPowerEvalutateCommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("common_param_count", "count", 2)]})
 
 
 

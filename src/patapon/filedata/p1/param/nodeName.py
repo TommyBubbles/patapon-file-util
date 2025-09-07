@@ -1,7 +1,12 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, FieldMetadata
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    FieldMetadata
+)
 
-# used by defaultEquipList as well
+
+
+# used by defaultEquipList
 @dataclass
 class NodeName(PataponStaticDataClass):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})

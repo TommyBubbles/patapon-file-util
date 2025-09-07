@@ -8,7 +8,7 @@ from patapon.filedata.patapon_data_class import (
     FieldMetadata,
     FieldTag
 )
-from patapon.filedata.p1 import DamageParam
+from . import DamageParam
 
 
 @dataclass

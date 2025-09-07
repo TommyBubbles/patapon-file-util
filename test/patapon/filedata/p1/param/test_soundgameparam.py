@@ -1,0 +1,65 @@
+from pytest import fixture
+import sys
+sys.path.insert(0, ".\\src")
+from patapon.filedata.p1.param import SoundGameParam
+from patapon.filedata.p1.param.soundgameparam import (
+    SoundGameParamHeader,
+    SoundGameParamInfoElement
+)
+from patapon.filedata.p1.param.generic import (
+    GenericParamHeaderPartitionInfo
+)
+
+
+
+@fixture
+def sound_game_param_header() -> SoundGameParamHeader:
+    return SoundGameParamHeader(
+        b'YGF_GFP\x00'.decode(),
+        0x40,
+        0.800000011920929,
+        0x1,
+        [0,0,0],
+        [
+            GenericParamHeaderPartitionInfo(0x6, 0x64)
+        ],
+        b'\x00\x00\x00\x00' * 6
+    )
+
+
+@fixture
+def sound_game_param_last_element() -> SoundGameParamInfoElement:
+    return SoundGameParamInfoElement(
+        b'\x8a\xe2\x82\xcc\x89\xb9\x97V\x82\xd1\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'.decode("shift-jis"),
+        5,
+        b'soundgame/soundgame_rock.bnd\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'.decode(),
+    )
+
+
+
+def test_verify_datafield_pos_effect_param():
+    assert SoundGameParam.verify_datafield_pos()
+
+
+def test_get_byte_size(
+        sound_game_param_header: SoundGameParamHeader,
+        sound_game_param_last_element: SoundGameParamInfoElement):
+    assert sound_game_param_header.get_byte_size() == 0x40
+    assert sound_game_param_last_element.get_byte_size() == 0x64
+
+
+def test_from_bytes_effect_param(
+        sound_game_param_header: SoundGameParamHeader,
+        sound_game_param_last_element: SoundGameParamInfoElement):
+    file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\soundgameparam.dat"
+    with open(file_name, "rb") as file:
+        raw = file.read()
+        actual: SoundGameParam = SoundGameParam.from_bytes(raw)
+        assert SoundGameParam.verify_filler(actual)
+
+    assert actual.header.get_byte_size() == 0x40
+    assert actual.header == sound_game_param_header
+
+    assert len(actual.sound_game_params.param_list) == 0x6
+    assert actual.sound_game_params.param_list[-1].get_byte_size() == 0x64
+    assert actual.sound_game_params.param_list[-1] == sound_game_param_last_element

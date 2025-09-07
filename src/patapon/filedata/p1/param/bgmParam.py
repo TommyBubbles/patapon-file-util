@@ -1,5 +1,9 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, FieldMetadata
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    FieldMetadata
+)
+
 
 
 @dataclass

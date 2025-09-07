@@ -1,20 +1,20 @@
-if __name__ == '__main__':
-    import sys
-    sys.path.append(".\\src")
-
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponDynamicDataClass, PataponDataClassBody, PataponDataClassElement, FieldMetadata, FieldTag
-from patapon.filedata.p1.param.generic import GenericParamHeader
+from patapon.filedata.patapon_data_class import (
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
+from .generic import GenericParamHeader
 
 
 
 @dataclass
 class GameParamHeader(GenericParamHeader):
-    def __new__(cls, *args, **kwargs):
-        instance = super().__new__(cls)
-        instance.add_tag_to_field("partition_info_list", FieldTag("game_param_count", "source"))
-        return instance
-
+    @classmethod
+    def add_tags(cls):
+        cls.add_tag_to_field("partition_info_list", FieldTag("game_param_count", "source"))
 
 
 @dataclass

@@ -1,32 +1,32 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
+from .generic import GenericParamHeader
+
+
+
+# Note: there is a value at 0x48 (0x30) that is not captured by this class.
+#       it is unclear as of right now if this will cause issues in the future
+@dataclass
+class CarnivalPowerEvalutateParamBasesHeader(GenericParamHeader):
+    @classmethod
+    def add_tags(cls):
+        cls.add_tag_to_field("partition_info_list", FieldTag("global_settings_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("regular_settings_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("common_param_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("unknown_1_param_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("unknown_2_param_count", "source"))
+
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesHeader(PataponStaticDataClass, PataponDataClassHeader):
-    magic: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
-    i1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
-    partition_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 4, count=3)})
-    global_settings_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("global_settings_count", "source")]})
-    global_settings_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 6)})
-    regular_settings_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7), "tags": [FieldTag("regular_settings_count", "source")]})
-    regular_settings_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8)})
-    common_param_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 9), "tags": [FieldTag("common_param_count", "source")]})
-    common_param_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 10)})
-    unknown_1_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 11), "tags": [FieldTag("unknown_1_count", "source")]})
-    unknown_1_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 12)})
-    unknown_2_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 13), "tags": [FieldTag("unknown_2_count", "source")]})
-    unknown_2_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 14)})
-    unknown_3_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 15), "tags": [FieldTag("unknown_3_count", "source")]})
-    unknown_3_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 16)})
-    filler_2: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 17, count=12)})
-
-
-
-@dataclass
-class CarnivalPowerEvalutateParamBasesGlobalSettingsElement(PataponStaticDataClass, PataponDataClassElement):
+class GlobalSettingsParamElement(PataponStaticDataClass, PataponDataClassElement):
     aName: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})
     id: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
     gameStartCP: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2)})
@@ -43,13 +43,13 @@ class CarnivalPowerEvalutateParamBasesGlobalSettingsElement(PataponStaticDataCla
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesGlobalSettings(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[CarnivalPowerEvalutateParamBasesGlobalSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateParamBasesGlobalSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("global_settings_count", "count")]})
+class GlobalSettingsParam(PataponDynamicDataClass, PataponDataClassBody):
+    settings_list: list[GlobalSettingsParamElement] = field(default_factory=list[GlobalSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("global_settings_count", "count", 0)]})
 
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesRegularSettingsElement(PataponStaticDataClass, PataponDataClassElement):
+class RegularSettingsParamElement(PataponStaticDataClass, PataponDataClassElement):
     aName: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})
     id: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
     blueBonusRate: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
@@ -62,13 +62,13 @@ class CarnivalPowerEvalutateParamBasesRegularSettingsElement(PataponStaticDataCl
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesRegularSettings(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[CarnivalPowerEvalutateParamBasesRegularSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateParamBasesRegularSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("regular_settings_count", "count")]})
+class RegularSettingsParam(PataponDynamicDataClass, PataponDataClassBody):
+    settings_list: list[RegularSettingsParamElement] = field(default_factory=list[RegularSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("regular_settings_count", "count", 1)]})
 
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesCommonParamElement(PataponStaticDataClass, PataponDataClassElement):
+class CommonParamElement(PataponStaticDataClass, PataponDataClassElement):
     aName: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="shift-jis")})
     id: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
     command: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2)})
@@ -82,13 +82,13 @@ class CarnivalPowerEvalutateParamBasesCommonParamElement(PataponStaticDataClass,
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesCommonParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CarnivalPowerEvalutateParamBasesCommonParamElement] = field(default_factory=list[CarnivalPowerEvalutateParamBasesCommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("common_param_count", "count")]})
+class CommonParam(PataponDynamicDataClass, PataponDataClassBody):
+    param_list: list[CommonParamElement] = field(default_factory=list[CommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("common_param_count", "count", 2)]})
 
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesUnknown1Element(PataponStaticDataClass, PataponDataClassElement):
+class Unknown1ParamElement(PataponStaticDataClass, PataponDataClassElement):
     aName: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})
     id: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
     i1: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 2)})
@@ -100,13 +100,13 @@ class CarnivalPowerEvalutateParamBasesUnknown1Element(PataponStaticDataClass, Pa
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesUnknown1(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CarnivalPowerEvalutateParamBasesUnknown1Element] = field(default_factory=list[CarnivalPowerEvalutateParamBasesUnknown1Element], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_1_count", "count")]})
+class Unknown1Param(PataponDynamicDataClass, PataponDataClassBody):
+    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_1_param_count", "count", 3)]})
 
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesUnknown2Element(PataponStaticDataClass, PataponDataClassElement):
+class Unknown2ParamElement(PataponStaticDataClass, PataponDataClassElement):
     aName: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="shift-jis")})
     id: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
     f1: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
@@ -114,16 +114,16 @@ class CarnivalPowerEvalutateParamBasesUnknown2Element(PataponStaticDataClass, Pa
 
 
 @dataclass
-class CarnivalPowerEvalutateParamBasesUnknown2(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CarnivalPowerEvalutateParamBasesUnknown2Element] = field(default_factory=list[CarnivalPowerEvalutateParamBasesUnknown2Element], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_2_count", "count")]})
+class Unknown2Param(PataponDynamicDataClass, PataponDataClassBody):
+    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_2_param_count", "count", 4)]})
 
 
 
 @dataclass
 class CarnivalPowerEvalutateParamBases(PataponDynamicDataClass):
     header: CarnivalPowerEvalutateParamBasesHeader = field(default_factory=CarnivalPowerEvalutateParamBasesHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    global_settings: CarnivalPowerEvalutateParamBasesGlobalSettings = field(default_factory=CarnivalPowerEvalutateParamBasesGlobalSettings, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    regular_settings: CarnivalPowerEvalutateParamBasesRegularSettings = field(default_factory=CarnivalPowerEvalutateParamBasesRegularSettings, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
-    common_params: CarnivalPowerEvalutateParamBasesCommonParam = field(default_factory=CarnivalPowerEvalutateParamBasesCommonParam, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})
-    unknown_1: CarnivalPowerEvalutateParamBasesUnknown1 = field(default_factory=CarnivalPowerEvalutateParamBasesUnknown1, metadata={"meta": FieldMetadata("body", 4), "tags": [FieldTag("file", "body")]})
-    unknown_2: CarnivalPowerEvalutateParamBasesUnknown2 = field(default_factory=CarnivalPowerEvalutateParamBasesUnknown2, metadata={"meta": FieldMetadata("body", 5), "tags": [FieldTag("file", "body")]})
+    global_settings: GlobalSettingsParam = field(default_factory=GlobalSettingsParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    regular_settings: RegularSettingsParam = field(default_factory=RegularSettingsParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    common_params: CommonParam = field(default_factory=CommonParam, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})
+    unknown_1: Unknown1Param = field(default_factory=Unknown1Param, metadata={"meta": FieldMetadata("body", 4), "tags": [FieldTag("file", "body")]})
+    unknown_2: Unknown2Param = field(default_factory=Unknown2Param, metadata={"meta": FieldMetadata("body", 5), "tags": [FieldTag("file", "body")]})

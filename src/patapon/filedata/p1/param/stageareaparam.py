@@ -10,6 +10,7 @@ from patapon.filedata.patapon_data_class import (
 )
 
 
+
 @dataclass
 class StageAreaParamHeader(PataponStaticDataClass, PataponDataClassHeader):
     id: str = field(default="LAST", metadata={"meta": FieldMetadata("string", 0, size=0x4)})

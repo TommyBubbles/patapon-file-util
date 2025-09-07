@@ -1,20 +1,23 @@
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
-from patapon.filedata.p1.param import DamageParam
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
+from . import DamageParam
+from .generic import GenericParamHeader
+
 
 
 @dataclass
-class CharaBirthParamHeader(PataponStaticDataClass, PataponDataClassHeader):
-    magic: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
-    i1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
-    partition_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 4, count=3)})
-    birth_param_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("birth_param_count", "source")]})
-    birth_param_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 6)})
-    adjust_damage_param_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7), "tags": [FieldTag("adjust_damage_param_count", "source")]})
-    adjust_damage_param_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8)})
-    filler_2: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 9, count=4)})
+class CharaBirthParamHeader(GenericParamHeader):
+    @classmethod
+    def add_tags(cls):
+        cls.add_tag_to_field("partition_info_list", FieldTag("birth_param_count", "source"))
+        cls.add_tag_to_field("partition_info_list", FieldTag("adjust_damage_param_count", "source"))
 
 
 
@@ -35,7 +38,7 @@ class BirthParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BirthParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BirthParamElement] = field(default_factory=list[BirthParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("birth_param_count", "count")]})
+    param_list: list[BirthParamElement] = field(default_factory=list[BirthParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("birth_param_count", "count", 0)]})
 
 
 
@@ -47,7 +50,7 @@ class AdjustDamageParamElement(PataponDynamicDataClass, PataponDataClassElement)
 
 @dataclass
 class AdjustDamageParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("adjust_damage_param_count", "count")]})
+    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("adjust_damage_param_count", "count", 1)]})
 
 
 

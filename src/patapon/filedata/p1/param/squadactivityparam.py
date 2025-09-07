@@ -1,10 +1,15 @@
-if __name__ == '__main__':
-    import sys
-    sys.path.insert(0, ".\\src")
-
 from dataclasses import dataclass, field 
-from patapon.filedata.patapon_data_class import PataponStaticDataClass, PataponDynamicDataClass, PataponDataClassBody, PataponDataClassHeader, PataponDataClassElement, FieldMetadata, FieldTag
-from patapon.filedata.p1.param.damageparam import DamageParam
+from patapon.filedata.patapon_data_class import (
+    PataponStaticDataClass,
+    PataponDynamicDataClass,
+    PataponDataClassBody,
+    PataponDataClassHeader,
+    PataponDataClassElement,
+    FieldMetadata,
+    FieldTag
+)
+from . import DamageParam
+
 
 
 @dataclass
