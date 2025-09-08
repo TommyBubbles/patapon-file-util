@@ -39,15 +39,17 @@ def test_verify_datafield_pos_effect_param():
 
 
 def test_get_byte_size(
-        game_param_element: GameParamInfoElement,
-        game_param_header: GameParamHeader):
+        game_param_header: GameParamHeader,
+        game_param_element: GameParamInfoElement
+        ):
     assert game_param_header.get_byte_size() == 0x40
     assert game_param_element.get_byte_size() == 0x80
 
 
 def test_from_bytes_effect_param(
-        game_param_element: GameParamInfoElement,
-        game_param_header: GameParamHeader):
+        game_param_header: GameParamHeader,
+        game_param_element: GameParamInfoElement
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\gameparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()

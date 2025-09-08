@@ -43,14 +43,16 @@ def test_verify_datafield_pos_effect_param():
 
 def test_get_byte_size(
         sound_game_param_header: SoundGameParamHeader,
-        sound_game_param_last_element: SoundGameParamInfoElement):
+        sound_game_param_last_element: SoundGameParamInfoElement
+        ):
     assert sound_game_param_header.get_byte_size() == 0x40
     assert sound_game_param_last_element.get_byte_size() == 0x64
 
 
 def test_from_bytes_effect_param(
         sound_game_param_header: SoundGameParamHeader,
-        sound_game_param_last_element: SoundGameParamInfoElement):
+        sound_game_param_last_element: SoundGameParamInfoElement
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\soundgameparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()

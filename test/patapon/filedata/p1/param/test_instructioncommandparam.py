@@ -48,14 +48,16 @@ def test_verify_datafield_pos_effect_param():
 
 def test_get_byte_size(
         instruction_command_param_header: InstructionCommandParamHeader,
-        instruction_command_param_last_element: InstructionCommandParamInfoElement):
+        instruction_command_param_last_element: InstructionCommandParamInfoElement
+        ):
     assert instruction_command_param_header.get_byte_size() == 0x40
     assert instruction_command_param_last_element.get_byte_size() == 0x80
 
 
 def test_from_bytes(
         instruction_command_param_header: InstructionCommandParamHeader,
-        instruction_command_param_last_element: InstructionCommandParamInfoElement):
+        instruction_command_param_last_element: InstructionCommandParamInfoElement
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\instructioncommandparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()

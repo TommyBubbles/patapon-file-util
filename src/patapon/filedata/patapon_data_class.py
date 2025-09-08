@@ -82,7 +82,7 @@ class FieldMetadata:
             FieldType.float: "f"
         }
         return format_string_dict.get(self.field_type, "")
-    
+
 
     def get_from_bytes_func(self) -> Callable:
         func_dict = {
@@ -97,7 +97,6 @@ class FieldMetadata:
             FieldType.unsigned_int8: lambda x: int(x),
             FieldType.float: lambda x: float(x)
         }
-
         return func_dict.get(self.field_type, lambda x: x)
     
 
@@ -118,16 +117,15 @@ class FieldMetadata:
         return func_dict.get(self.field_type, lambda x: x)
     
 
+    def get_byte_size_single(self) -> int:
+        return calcsize(self.get_field_string())
+
+
     def get_byte_size(self) -> int:
         count: int = self.count
         size: int = self.size
-        field_string_size: int = calcsize(self.get_field_string())
+        field_string_size: int = self.get_byte_size_single()
         return size * field_string_size * count
-
-
-    def get_pos_size(self) -> int:
-        count: int = self.count
-        return count
 
 
 class PataponDataClassHeader:
@@ -197,15 +195,45 @@ class PataponDataClassElement:
 @dataclass
 class PataponDataClass:
     @classmethod
-    def from_bytes(cls, raw: bytes, *, header: 'PataponDataClassHeader | PataponDataClass | None' = ...) -> 'PataponDataClass': ...
+    def from_bytes(cls, raw: bytes, *, header: 'PataponDataClass | None' = ...) -> 'PataponDataClass': ...
     def to_bytes(self) -> bytes: ...
     @classmethod
     def format_string(cls) -> str: ...
-    def get_byte_size(self) -> int: ...
 
 
     def __init__(self):
         pass
+
+
+    def get_byte_size(self) -> int:
+        cls = self.__class__
+        size = 0
+        for name, field in cls.__dataclass_fields__.items():
+            value = getattr(self, name)
+            metadata: FieldMetadata = field.metadata['meta']            
+
+            if isinstance(value, PataponDataClass):
+                size += value.get_byte_size()
+            elif isinstance(value, (int, float)):
+                size += metadata.get_byte_size()
+            elif isinstance(value, (bytes, str)):
+                size += max(metadata.get_byte_size(), metadata.get_byte_size_single() * len(value))
+            elif isinstance(value, list):
+                if len(value) > 0:
+                    if isinstance(value[0], (int, float)):
+                        size += metadata.get_byte_size_single() * len(value)
+                    elif isinstance(value[0], (bytes, str)):
+                        for i in value:
+                            size += max(metadata.get_byte_size(), metadata.get_byte_size_single() * len(i))
+                    elif isinstance(value[0], PataponDataClass):
+                        for i in value:
+                            size += i.get_byte_size()
+                    else:
+                        raise NotImplementedError(f"uh oh, we are not supposed to be expecting other values in {self.__class__.__name__}.get_byte_size: {type(value)}")
+            else:
+                raise NotImplementedError(f"uh oh, we are not supposed to be expecting other values in {self.__class__}.get_byte_size: {type(value)}")
+            print(name, size)
+        return size
 
 
     @classmethod
@@ -486,23 +514,13 @@ class PataponStaticDataClass(PataponDataClass):
             format_list[pos] = f"{size}{field_string}" * count
         
         return cls.byte_order + "".join(format_list)
-    
 
-    def get_byte_size(self) -> int:
-        cls = self.__class__
-        
-        size = 0
-        for field in cls.__dataclass_fields__.values():
-            metadata: FieldMetadata = field.metadata["meta"]
-            size += metadata.get_byte_size()
-        return size
 
 
 class PataponDynamicDataClass(PataponDataClass):
-    tag_list: dict[FieldTag,str] = {}
     byte_order: str = "<"
     @classmethod
-    def from_bytes(cls, raw: bytes, *_, header: Union[PataponDataClassHeader,PataponDataClass,None] = None) -> 'PataponDynamicDataClass':
+    def from_bytes(cls, raw: bytes, *_, header: Union[PataponDataClass,None] = None) -> 'PataponDynamicDataClass':
         field_class: type[PataponDataClass]
         new_value: PataponDataClass | Any
         new_inst: PataponDynamicDataClass = cls()
@@ -616,7 +634,7 @@ class PataponDynamicDataClass(PataponDataClass):
 
                 # in the case of a string, we have to check if a size was given
                 # if not, we must try to find the correct size to extract from the
-                # bytes by using the null terminator
+                # bytes by using a null terminator
                 if metadata.field_type == FieldType.string and size == 1:
                     null_term = metadata.null_term
                     end = 0
@@ -643,7 +661,7 @@ class PataponDynamicDataClass(PataponDataClass):
                 else:
                     new_value = func(new_values[0])
 
-            # set the new value and remove processes value from the raw bytes
+            # set the new value and remove processed value from the raw bytes
             setattr(new_inst, name, new_value)
             raw = raw[data_size:]
         
@@ -658,45 +676,6 @@ class PataponDynamicDataClass(PataponDataClass):
     def format_string(cls) -> str:
         return ""
 
-
-    def get_byte_size(self) -> int:
-        cls = self.__class__
-        size = 0
-        for name in cls.__dataclass_fields__.keys():
-            value = getattr(self, name)
-            
-            if isinstance(value, (PataponStaticDataClass, PataponDynamicDataClass)):
-                size += value.get_byte_size()
-            elif isinstance(value, str):
-                if not value.isascii():
-                    for c in value:
-                        if not c.isascii():
-                            # it is most likely shift-jis character
-                            size += 2
-                        else:
-                            size += 1
-                else:
-                    size += len(value)
-            elif isinstance(value, bytes):
-                size += len(value)
-            elif isinstance(value, (int, float)):
-                size += 4
-            elif isinstance(value, list):
-                if len(value) > 0:
-                    if isinstance(value[0], (int, float)):
-                        size += 4 * len(value)
-                    elif isinstance(value[0], PataponStaticDataClass):
-                        size += value[0].get_byte_size() * len(value)
-                    else:
-                        for i in value:
-                            if isinstance(i, PataponDynamicDataClass):
-                                size += i.get_byte_size()
-                            else:
-                                size += len(i)
-            else:
-                raise NotImplementedError(f"uh oh, we are not supposed to be expecting other values in get_byte_size: {type(value)}")
-        return size
-    
 
 def new_data_field(metadata: FieldMetadata, *_, field_type: type | None = None, tags: list[FieldTag] = []):
     field_metadata = {

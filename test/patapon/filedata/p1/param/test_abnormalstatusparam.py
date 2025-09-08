@@ -11,7 +11,6 @@ from patapon.filedata.p1.param.generic import (
 )
 
 
-
 @fixture
 def abnormal_status_param_header() -> AbnormalStatusParamHeader:
     return AbnormalStatusParamHeader(
@@ -72,7 +71,7 @@ def test_get_byte_size(
     assert abnormal_status_param_last_element.get_byte_size() == 0x100
 
 
-def test_from_bytes_actor_param_file_one(
+def test_from_bytes(
         abnormal_status_param_header: AbnormalStatusParamHeader,
         abnormal_status_param_last_element: AbnormalStatusParamInfoElement
         ):

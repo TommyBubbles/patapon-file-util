@@ -43,14 +43,16 @@ def test_verify_datafield_pos_effect_param():
 
 def test_get_byte_size(
         particle_param_header: ParticleParamHeader,
-        particle_param_last_element: ParticleParamInfoElement):
+        particle_param_last_element: ParticleParamInfoElement
+        ):
     assert particle_param_header.get_byte_size() == 0x40
     assert particle_param_last_element.get_byte_size() == 0x10
 
 
 def test_from_bytes_effect_param(
         particle_param_header: ParticleParamHeader,
-        particle_param_last_element: ParticleParamInfoElement):
+        particle_param_last_element: ParticleParamInfoElement
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\particleparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()

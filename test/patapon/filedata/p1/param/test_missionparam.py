@@ -71,7 +71,8 @@ class Test_SystemDataMissionParam:
     def test_get_byte_size(self,
             mission_param_header: SystemDataMissionParamHeader,
             mission_param_last_element: MissionParam,
-            mission_param_extra_param_last_element: SystemDataMissionParamExtraParamElement):
+            mission_param_extra_param_last_element: SystemDataMissionParamExtraParamElement
+            ):
         assert mission_param_header.get_byte_size() == 0x40
         assert mission_param_last_element.get_byte_size() == 0x400
         assert mission_param_extra_param_last_element.get_byte_size() == 0x100
@@ -80,7 +81,8 @@ class Test_SystemDataMissionParam:
     def test_from_bytes_effect_param(self,
             mission_param_header: SystemDataMissionParamHeader,
             mission_param_last_element: MissionParam,
-            mission_param_extra_param_last_element: SystemDataMissionParamExtraParamElement):
+            mission_param_extra_param_last_element: SystemDataMissionParamExtraParamElement
+            ):
         file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\missionparam.dat"
         with open(file_name, "rb") as file:
             raw = file.read()
@@ -159,13 +161,14 @@ class Test_MissionParam:
         )
 
 
-    def test_verify_datafield_pos_effect_param(self):
+    def test_verify_datafield_pos(self):
         assert MissionParam.verify_datafield_pos()
 
 
     def test_from_bytes_file_one(self,
             file_one: str,
-            mission_param_file_one: MissionParam):
+            mission_param_file_one: MissionParam
+            ):
         with open(file_one, "rb") as file:
             raw = file.read()
             actual: MissionParam = MissionParam.from_bytes(raw)
@@ -177,7 +180,8 @@ class Test_MissionParam:
     
     def test_from_bytes_file_two(self,
             file_two: str,
-            mission_param_file_two: MissionParam):
+            mission_param_file_two: MissionParam
+            ):
         with open(file_two, "rb") as file:
             raw = file.read()
             actual: MissionParam = MissionParam.from_bytes(raw)

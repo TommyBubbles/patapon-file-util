@@ -42,14 +42,16 @@ def test_verify_datafield_pos_effect_param():
 
 def test_get_byte_size(
         miracle_param_last_element: MiracleParamInfoElement,
-        miracle_param_header: MiracleParamHeader):
+        miracle_param_header: MiracleParamHeader
+        ):
     assert miracle_param_header.get_byte_size() == 0x40
     assert miracle_param_last_element.get_byte_size() == 0x48
 
 
 def test_from_bytes_effect_param(
         miracle_param_last_element: MiracleParamInfoElement,
-        miracle_param_header: MiracleParamHeader):
+        miracle_param_header: MiracleParamHeader
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\miracleparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()

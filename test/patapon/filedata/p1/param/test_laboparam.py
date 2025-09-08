@@ -40,14 +40,16 @@ def test_verify_datafield_pos_effect_param():
 
 def test_get_byte_size(
         labo_param_element: LaboParamInfoElement,
-        labo_param_header: LaboParamHeader):
+        labo_param_header: LaboParamHeader
+        ):
     assert labo_param_header.get_byte_size() == 0x40
     assert labo_param_element.get_byte_size() == 0x80
 
 
 def test_from_bytes_effect_param(
         labo_param_element: LaboParamInfoElement,
-        labo_param_header: LaboParamHeader):
+        labo_param_header: LaboParamHeader
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\laboparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()

@@ -72,7 +72,8 @@ def test_get_byte_size(
         sound_param_header: SoundParamHeader,
         mood_setting_param_element: MoodSettingParamElement,
         antededent_def_param_last_element: AntecedentDefParamElement,
-        rule_def_param_last_element: RuleDefParamElement):
+        rule_def_param_last_element: RuleDefParamElement
+        ):
     assert sound_param_header.get_byte_size() == 0x40
     assert mood_setting_param_element.get_byte_size() == 0x40
     assert antededent_def_param_last_element.get_byte_size() == 0x40
@@ -83,7 +84,8 @@ def test_from_bytes(
         sound_param_header: SoundParamHeader,
         mood_setting_param_element: MoodSettingParamElement,
         antededent_def_param_last_element: AntecedentDefParamElement,
-        rule_def_param_last_element: RuleDefParamElement):
+        rule_def_param_last_element: RuleDefParamElement
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\soundparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()

@@ -3,7 +3,8 @@
 ## - make the file header available to all classes within the main class
 ## - combine PataponStaticDataClass and PataponDynamicDataClass into one class
 ## - add logic for adding the pos to fieldtag that is attached to a list of PataponDataClass objects
-
+## - fix logic in get_byte_size for operations on string values using given size
+## - implement the to_bytes logic for dynamic data and format_string (potentially factor out instead)
 
 
 # patapon-file-util

@@ -96,9 +96,10 @@ def test_get_byte_size(
         common_param_last_element: CarnivalPowerEvalutateCommonParamElement
         ):
     assert carnival_power_evalutate_param_header.get_byte_size() == 0x80
-    assert common_param_last_element.get_byte_size() == 0x50
-    assert regular_settings_element.get_byte_size() == 0x50
     assert global_settings_element.get_byte_size() == 0x50
+    assert regular_settings_element.get_byte_size() == 0x50
+    assert common_param_last_element.get_byte_size() == 0x50
+
 
 def test_from_bytes(
         carnival_power_evalutate_param_header: CarnivalPowerEvalutateParamHeader,

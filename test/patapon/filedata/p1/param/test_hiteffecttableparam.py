@@ -60,7 +60,8 @@ def test_verify_datafield_pos_effect_param():
 def test_get_byte_size(
         hit_effect_table_param_header: HitEffectTableParamHeader,
         base_param_last_element: BaseParamElement,
-        attack_material_table_last_element: AttackMaterialTableElement):
+        attack_material_table_last_element: AttackMaterialTableElement
+        ):
     assert hit_effect_table_param_header.get_byte_size() == 0x40
     assert base_param_last_element.get_byte_size() == 0x40
     assert attack_material_table_last_element.get_byte_size() == 0x80
@@ -69,7 +70,8 @@ def test_get_byte_size(
 def test_from_bytes_effect_param(
         hit_effect_table_param_header: HitEffectTableParamHeader,
         base_param_last_element: BaseParamElement,
-        attack_material_table_last_element: AttackMaterialTableElement):
+        attack_material_table_last_element: AttackMaterialTableElement
+        ):
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\hiteffecttableparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
