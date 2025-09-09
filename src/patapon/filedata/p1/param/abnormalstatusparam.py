@@ -15,7 +15,8 @@ from .generic import GenericParamHeader
 class AbnormalStatusParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("abnormal_status_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("abnormal_status_param_count", "source", 0, sub_tag))
 
 
 
@@ -51,7 +52,7 @@ class AbnormalStatusParamInfoElement(PataponStaticDataClass, PataponDataClassEle
 
 @dataclass
 class AbnormalStatusParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    info_list: list[AbnormalStatusParamInfoElement] = field(default_factory=list[AbnormalStatusParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("abnormal_status_param_count", "count", 0)]})
+    info_list: list[AbnormalStatusParamInfoElement] = field(default_factory=list[AbnormalStatusParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("abnormal_status_param_count", "count")]})
 
 
 

@@ -15,8 +15,9 @@ from .generic import GenericParamHeader
 class SystemParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("unknown_1_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("unknown_2_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("s_unknown_1_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("s_unknown_2_param_count", "source", 1, sub_tag))
 
 
 
@@ -29,7 +30,7 @@ class Unknown1ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown1Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_1_param_count", "count", 0)]})
+    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("s_unknown_1_param_count", "count")]})
 
 
 
@@ -42,7 +43,7 @@ class Unknown2ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown2Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_2_param_count", "count", 1)]})
+    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("s_unknown_2_param_count", "count")]})
 
 
 

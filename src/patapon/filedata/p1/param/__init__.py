@@ -22,3 +22,8 @@ from .soundparam import SoundParam
 from .squadlineparam import SquadLineParam
 from .systemparam import SystemParam
 from .unitparam import UnitParam
+
+# basesdata
+from .charaparam import CharaParam, BasesDataCharaParam
+from .facilityparam import FacilityParam
+from .nodenameparam import NodeName, NodeNameParam

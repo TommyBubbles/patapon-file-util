@@ -17,11 +17,12 @@ from .generic import GenericParamHeader
 class CarnivalPowerEvalutateParamBasesHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("global_settings_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("regular_settings_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("common_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("unknown_1_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("unknown_2_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpepb_global_settings_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpepb_regular_settings_count", "source", 1, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpepb_common_param_count", "source", 2, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpepb_unknown_1_param_count", "source", 3, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpepb_unknown_2_param_count", "source", 4, sub_tag))
 
 
 
@@ -44,7 +45,7 @@ class GlobalSettingsParamElement(PataponStaticDataClass, PataponDataClassElement
 
 @dataclass
 class GlobalSettingsParam(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[GlobalSettingsParamElement] = field(default_factory=list[GlobalSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("global_settings_count", "count", 0)]})
+    settings_list: list[GlobalSettingsParamElement] = field(default_factory=list[GlobalSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_global_settings_count", "count")]})
 
 
 
@@ -63,7 +64,7 @@ class RegularSettingsParamElement(PataponStaticDataClass, PataponDataClassElemen
 
 @dataclass
 class RegularSettingsParam(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[RegularSettingsParamElement] = field(default_factory=list[RegularSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("regular_settings_count", "count", 1)]})
+    settings_list: list[RegularSettingsParamElement] = field(default_factory=list[RegularSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_regular_settings_count", "count")]})
 
 
 
@@ -83,7 +84,7 @@ class CommonParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class CommonParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CommonParamElement] = field(default_factory=list[CommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("common_param_count", "count", 2)]})
+    param_list: list[CommonParamElement] = field(default_factory=list[CommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_common_param_count", "count")]})
 
 
 
@@ -101,7 +102,7 @@ class Unknown1ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown1Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_1_param_count", "count", 3)]})
+    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_unknown_1_param_count", "count")]})
 
 
 
@@ -115,7 +116,7 @@ class Unknown2ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown2Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("unknown_2_param_count", "count", 4)]})
+    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_unknown_2_param_count", "count")]})
 
 
 

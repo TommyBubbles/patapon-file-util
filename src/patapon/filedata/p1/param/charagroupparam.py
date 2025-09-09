@@ -14,7 +14,8 @@ from .generic import GenericParamHeader
 class CharaGroupParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("chara_group_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("chara_group_param_count", "source", 0, sub_tag))
 
 
 
@@ -29,7 +30,7 @@ class CharaGroupParamInfoElement(PataponStaticDataClass, PataponDataClassElement
 
 @dataclass
 class CharaGroupParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CharaGroupParamInfoElement] = field(default_factory=list[CharaGroupParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("chara_group_param_count", "count", 0)]})
+    param_list: list[CharaGroupParamInfoElement] = field(default_factory=list[CharaGroupParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("chara_group_param_count", "count")]})
 
 
 

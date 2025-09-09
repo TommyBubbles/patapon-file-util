@@ -14,7 +14,8 @@ from .generic import GenericParamHeader
 class LaboParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("labo_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("labo_param_count", "source", 0, sub_tag))
 
 
 @dataclass
@@ -25,7 +26,7 @@ class LaboParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class LaboParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[LaboParamInfoElement] = field(default_factory=list[LaboParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("labo_param_count", "count", 0)]})
+    param_list: list[LaboParamInfoElement] = field(default_factory=list[LaboParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("labo_param_count", "count")]})
 
 
 

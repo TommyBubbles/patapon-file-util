@@ -14,7 +14,8 @@ from .generic import GenericParamHeader
 class GameParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("game_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("game_param_count", "source", 0, sub_tag))
 
 
 @dataclass
@@ -25,7 +26,7 @@ class GameParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class GameParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[GameParamInfoElement] = field(default_factory=list[GameParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("game_param_count", "count", 0)]})
+    param_list: list[GameParamInfoElement] = field(default_factory=list[GameParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("game_param_count", "count")]})
 
 
 
@@ -33,12 +34,3 @@ class GameParamInfo(PataponDynamicDataClass, PataponDataClassBody):
 class GameParam(PataponDynamicDataClass):
     header: GameParamHeader = field(default_factory=GameParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
     game_params: GameParamInfo = field(default_factory=GameParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-
-
-
-if __name__ == '__main__':
-    test = GameParamHeader()
-    field_info = test.__dataclass_fields__.get("partition_info_list", None)
-
-    if field_info is not None:
-        print(field_info.metadata.get("tags", None))

@@ -15,8 +15,9 @@ from .generic import GenericParamHeader
 class EffectParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("effect_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("effect_damage_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("effect_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("effect_damage_param_count", "source", 1, sub_tag))
 
 
 
@@ -52,7 +53,7 @@ class EffectParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class EffectParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[EffectParamInfoElement] = field(default_factory=list[EffectParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_param_count", "count", 0)]})
+    param_list: list[EffectParamInfoElement] = field(default_factory=list[EffectParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_param_count", "count")]})
 
 
 
@@ -64,7 +65,7 @@ class EffectDamageParamElement(PataponDynamicDataClass, PataponDataClassElement)
 
 @dataclass
 class EffectDamageParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[EffectDamageParamElement] = field(default_factory=list[EffectDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_damage_param_count", "count", 1)]})
+    param_list: list[EffectDamageParamElement] = field(default_factory=list[EffectDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_damage_param_count", "count")]})
 
 
 

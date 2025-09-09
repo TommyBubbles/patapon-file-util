@@ -15,7 +15,8 @@ from .generic import GenericParamHeader
 class SquadLineParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("squad_line_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("squad_line_param_count", "source", 0, sub_tag))
 
 
 
@@ -78,7 +79,7 @@ class SquadLineParamInfoElement(PataponDynamicDataClass, PataponDataClassElement
 
 @dataclass
 class SquadLineParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[SquadLineParamInfoElement] = field(default_factory=list[SquadLineParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("squad_line_param_count", "count", 0)]})
+    param_list: list[SquadLineParamInfoElement] = field(default_factory=list[SquadLineParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("squad_line_param_count", "count")]})
 
 
 

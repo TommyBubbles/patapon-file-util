@@ -3,101 +3,77 @@ from patapon.filedata.patapon_data_class import (
     PataponStaticDataClass,
     PataponDynamicDataClass,
     PataponDataClassBody,
-    PataponDataClassHeader,
     PataponDataClassElement,
     FieldMetadata,
     FieldTag
 )
-
-
-
-@dataclass
-class FacilityParamHeader(PataponStaticDataClass, PataponDataClassHeader):
-    id: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
-    header_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
-    section_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 4, count=3)})
-    param_list_element_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("param_list_count", "source")]})
-    param_list_element_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 6)})
-    model_param_list_element_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7), "tags": [FieldTag("model_param_list_count", "source")]})
-    model_param_list_element_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8)})
-    attach_param_list_element_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 9), "tags": [FieldTag("attach_param_list_count", "source")]})
-    attach_param_list_element_size: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 10)})
-
+from .generic import GenericParamHeader
 
 
 @dataclass
-class FacilityParamElement(PataponStaticDataClass, PataponDataClassElement):
+class FacilityParamHeader(GenericParamHeader):
+    @classmethod
+    def add_tags(cls):
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("f_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("f_model_param_count", "source", 1, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("f_attach_param_count", "source", 2, sub_tag))
+
+
+@dataclass
+class AuxesisParam(PataponStaticDataClass, PataponDataClassElement):
+    modelName: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})
+    pri: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
+    seedCost: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 2)})
+    personalCost: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 3)})
+
+
+@dataclass
+class FacilityParamElement(PataponDynamicDataClass, PataponDataClassElement):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="shift-jis")})
-    id: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    poolSize: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2)})
+    id: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
+    poolSize: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 2)})
     scriptName: str = field(default="", metadata={"meta": FieldMetadata("string", 3, size=0x20)})
-    modelName_1: str = field(default="", metadata={"meta": FieldMetadata("string", 4, size=0x20)})
-    pri_1: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 5)})
-    seedCost_1: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 6)})
-    personalCost_1: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 7)})
-    modelName_2: str = field(default="", metadata={"meta": FieldMetadata("string", 8, size=0x20)})
-    pri_2: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 9)})
-    seedCost_2: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 10)})
-    personalCost_2: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 11)})
-    modelName_3: str = field(default="", metadata={"meta": FieldMetadata("string", 12, size=0x20)})
-    pri_3: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 13)})
-    seedCost_3: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 14)})
-    personalCost_3: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 15)})
-    type: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 16)})
-    padding_1: bytes = field(default=b'', metadata={"meta": FieldMetadata("padding", 17, size=0x8)})
+    auxesisParam: list[AuxesisParam] = field(default_factory=list[AuxesisParam], metadata={"meta": FieldMetadata("element_list", 4, count=3)})
+    type: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5)})
+    pad: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 6, count=2)})
 
 
 @dataclass
-class FacilityParamList(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[FacilityParamElement] = field(default_factory=list[FacilityParamElement], metadata={"meta": FieldMetadata("element", 0), "tags": [FieldTag("param_list_count", "count")]})
+class FacilityParamInfo(PataponDynamicDataClass, PataponDataClassBody):
+    param_list: list[FacilityParamElement] = field(default_factory=list[FacilityParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("f_param_count", "count")]})
 
 
 
 @dataclass
-class FacilityModelParamElement(PataponStaticDataClass, PataponDataClassElement):
+class MotionParam(PataponStaticDataClass, PataponDataClassElement):
+    startFrame: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 0)})
+    nFrame: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 1)})
+
+
+@dataclass
+class ModelParamElement(PataponDynamicDataClass, PataponDataClassElement):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})
     modelName: str = field(default="", metadata={"meta": FieldMetadata("string", 1, size=0x20)})
-    buildName: str = field(default="", metadata={"meta": FieldMetadata("string", 2, size=0x20)}) # wreckName
-    resourceType: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 4)}) # nAttach
-    attachName_1: str = field(default="", metadata={"meta": FieldMetadata("string", 5, size=0x20)})
-    attachName_2: str = field(default="", metadata={"meta": FieldMetadata("string", 6, size=0x20)})
-    attachName_3: str = field(default="", metadata={"meta": FieldMetadata("string", 7, size=0x20)})
-    attachName_4: str = field(default="", metadata={"meta": FieldMetadata("string", 8, size=0x20)})
-    attachName_5: str = field(default="", metadata={"meta": FieldMetadata("string", 9, size=0x20)})
-    attachName_6: str = field(default="", metadata={"meta": FieldMetadata("string", 10, size=0x20)})
-    width: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 11)})
-    nBuildMotionParam: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int16", 12)})
-    nWreckMotionParam: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int16", 13)})
-    startFrame_1: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 14)})
-    nFrame_1: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 15)})
-    startFrame_2: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 16)})
-    nFrame_2: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 17)})
-    startFrame_3: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 18)})
-    nFrame_3: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 19)})
-    startFrame_4: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 20)})
-    nFrame_4: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 21)})
-    startFrame_5: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 22)})
-    nFrame_5: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 23)})
-    startFrame_6: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 24)})
-    nFrame_6: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 25)})
-    startFrame_7: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 26)})
-    nFrame_7: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 27)})
-    startFrame_8: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 28)})
-    nFrame_8: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 29)})
-    startFrame_9: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 30)})
-    nFrame_9: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 31)})
+    buildName: str = field(default="", metadata={"meta": FieldMetadata("string", 2, size=0x20)})
+    wreckName: str = field(default="", metadata={"meta": FieldMetadata("string", 3, size=0x20)})
+    resourceType: int = field(default=0, metadata={"meta": FieldMetadata("signed_int16", 4)})
+    nAttach: int = field(default=0, metadata={"meta": FieldMetadata("signed_int16", 5)})
+    attachName: list[str] = field(default_factory=list[str], metadata={"meta": FieldMetadata("string", 6, count=5, size=0x20)})
+    width: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 7)})
+    nBuildMotionParam: int = field(default=0, metadata={"meta": FieldMetadata("signed_int16", 8)})
+    nWreckMotionParam: int = field(default=0, metadata={"meta": FieldMetadata("signed_int16", 9)})
+    motionParam: list[MotionParam] = field(default_factory=list[MotionParam], metadata={"meta": FieldMetadata("element_list", 10, count=9)})
 
 
 @dataclass
-class FacilityModelParamList(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[FacilityModelParamElement] = field(default_factory=list[FacilityModelParamElement], metadata={"meta": FieldMetadata("element", 0), "tags": [FieldTag("model_param_list_count", "count")]})
+class ModelParam(PataponDynamicDataClass, PataponDataClassBody):
+    param_list: list[ModelParamElement] = field(default_factory=list[ModelParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("f_model_param_count", "count")]})
 
 
 
 @dataclass
-class FacilityAttachParamElement(PataponStaticDataClass, PataponDataClassElement):
+class AttachParamElement(PataponStaticDataClass, PataponDataClassElement):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})
     nAttach: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
     modelAttachNodeName: str = field(default="", metadata={"meta": FieldMetadata("string", 2, size=0x20)})
@@ -109,8 +85,8 @@ class FacilityAttachParamElement(PataponStaticDataClass, PataponDataClassElement
 
 
 @dataclass
-class FacilityAttachParamList(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[FacilityAttachParamElement] = field(default_factory=list[FacilityAttachParamElement], metadata={"meta": FieldMetadata("element", 0), "tags": [FieldTag("attach_param_list_count", "count")]})
+class AttachParam(PataponDynamicDataClass, PataponDataClassBody):
+    param_list: list[AttachParamElement] = field(default_factory=list[AttachParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("f_attach_param_count", "count")]})
 
 
 
@@ -118,6 +94,6 @@ class FacilityAttachParamList(PataponDynamicDataClass, PataponDataClassBody):
 @dataclass
 class FacilityParam(PataponDynamicDataClass):
     header: FacilityParamHeader = field(default_factory=FacilityParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    facilityParamList: FacilityParamList = field(default_factory=FacilityParamList, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    facilityModelParamList: FacilityModelParamList = field(default_factory=FacilityModelParamList, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
-    facilityAttachParamList: FacilityAttachParamList = field(default_factory=FacilityAttachParamList, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})
+    facility_params: FacilityParamInfo = field(default_factory=FacilityParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    model_params: ModelParam = field(default_factory=ModelParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    attach_params: AttachParam = field(default_factory=AttachParam, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})

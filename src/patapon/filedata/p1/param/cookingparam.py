@@ -15,7 +15,8 @@ from .generic import GenericParamHeader
 class CookingParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("cooking_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("cooking_param_count", "source", 0, sub_tag))
 
 
 
@@ -29,7 +30,7 @@ class CookingParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class CookingParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CookingParamInfoElement] = field(default_factory=list[CookingParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cooking_param_count", "count", 0)]})
+    param_list: list[CookingParamInfoElement] = field(default_factory=list[CookingParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cooking_param_count", "count")]})
 
 
 

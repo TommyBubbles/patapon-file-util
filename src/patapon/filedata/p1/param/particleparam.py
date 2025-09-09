@@ -15,7 +15,8 @@ from .generic import GenericParamHeader
 class ParticleParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("particle_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("particle_param_count", "source", 0, sub_tag))
 
 
 
@@ -28,7 +29,7 @@ class ParticleParamInfoElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class ParticleParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[ParticleParamInfoElement] = field(default_factory=list[ParticleParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("particle_param_count", "count", 0)]})
+    param_list: list[ParticleParamInfoElement] = field(default_factory=list[ParticleParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("particle_param_count", "count")]})
 
 
 

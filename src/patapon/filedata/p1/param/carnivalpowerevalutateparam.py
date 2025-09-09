@@ -17,9 +17,10 @@ from .generic import GenericParamHeader
 class CarnivalPowerEvalutateParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("global_settings_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("regular_settings_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("common_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpep_global_settings_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpep_regular_settings_count", "source", 1, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("cpep_common_param_count", "source", 2, sub_tag))
 
 
 
@@ -42,7 +43,7 @@ class CarnivalPowerEvalutateGlobalSettingsElement(PataponStaticDataClass, Patapo
 
 @dataclass
 class CarnivalPowerEvalutateGlobalSettings(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[CarnivalPowerEvalutateGlobalSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateGlobalSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("global_settings_count", "count", 0)]})
+    settings_list: list[CarnivalPowerEvalutateGlobalSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateGlobalSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpep_global_settings_count", "count")]})
 
 
 
@@ -65,7 +66,7 @@ class CarnivalPowerEvalutateRegularSettingsElement(PataponStaticDataClass, Patap
 
 @dataclass
 class CarnivalPowerEvalutateRegularSettings(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[CarnivalPowerEvalutateRegularSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateRegularSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("regular_settings_count", "count", 1)]})
+    settings_list: list[CarnivalPowerEvalutateRegularSettingsElement] = field(default_factory=list[CarnivalPowerEvalutateRegularSettingsElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpep_regular_settings_count", "count")]})
 
 
 
@@ -85,7 +86,7 @@ class CarnivalPowerEvalutateCommonParamElement(PataponStaticDataClass, PataponDa
 
 @dataclass
 class CarnivalPowerEvalutateCommonParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CarnivalPowerEvalutateCommonParamElement] = field(default_factory=list[CarnivalPowerEvalutateCommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("common_param_count", "count", 2)]})
+    param_list: list[CarnivalPowerEvalutateCommonParamElement] = field(default_factory=list[CarnivalPowerEvalutateCommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpep_common_param_count", "count")]})
 
 
 

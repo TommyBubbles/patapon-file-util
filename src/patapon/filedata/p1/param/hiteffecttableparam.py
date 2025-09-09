@@ -14,8 +14,9 @@ from .generic import GenericParamHeader
 class HitEffectTableParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("base_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("attack_material_table_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("het_base_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("het_attack_material_table_count", "source", 1, sub_tag))
 
 
 
@@ -32,7 +33,7 @@ class BaseParamElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("base_param_count", "count", 0)]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("het_base_param_count", "count")]})
 
 
 
@@ -46,7 +47,7 @@ class AttackMaterialTableElement(PataponDynamicDataClass, PataponDataClassElemen
 
 @dataclass
 class AttackMaterialTable(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AttackMaterialTableElement] = field(default_factory=list[AttackMaterialTableElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("attack_material_table_count", "count", 1)]})
+    param_list: list[AttackMaterialTableElement] = field(default_factory=list[AttackMaterialTableElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("het_attack_material_table_count", "count")]})
 
 
 

@@ -35,12 +35,14 @@ class FieldTag:
                  name: str,
                  tag_type: Any,
                  pos: int | None = None,
+                 sub_tag: 'FieldTag | None' = None, 
                  *_,
                  func: Callable | None = None,
                  func_params: dict[str,str] | None = None):
         self.name = name
         self.tag_type = FieldTagType[tag_type]
         self.pos = pos
+        self.sub_tag = sub_tag
         self.func = func
         self.func_params = func_params
 
@@ -223,8 +225,10 @@ class PataponDataClass:
                     if isinstance(value[0], (int, float)):
                         size += metadata.get_byte_size_single() * len(value)
                     elif isinstance(value[0], (bytes, str)):
+                        temp_size = 0
                         for i in value:
-                            size += max(metadata.get_byte_size(), metadata.get_byte_size_single() * len(i))
+                            temp_size += metadata.get_byte_size_single() * len(i)
+                        size += max(metadata.get_byte_size(), temp_size)
                     elif isinstance(value[0], PataponDataClass):
                         for i in value:
                             size += i.get_byte_size()
@@ -232,7 +236,6 @@ class PataponDataClass:
                         raise NotImplementedError(f"uh oh, we are not supposed to be expecting other values in {self.__class__.__name__}.get_byte_size: {type(value)}")
             else:
                 raise NotImplementedError(f"uh oh, we are not supposed to be expecting other values in {self.__class__}.get_byte_size: {type(value)}")
-            print(name, size)
         return size
 
 
@@ -289,7 +292,7 @@ class PataponDataClass:
         results: list[FieldTag] = []
 
         for name, field in cls.__dataclass_fields__.items():
-            tags: list[FieldTag] = field.metadata("tags", [])
+            tags: list[FieldTag] = field.metadata.get("tags", [])
             for tag in tags:
                 if tag.name == tag_name and \
                         (exclude is None or name != exclude):
@@ -316,10 +319,20 @@ class PataponDataClass:
             if obj_field_value is not None:
                 if type(obj_field_value) == int:
                     return obj_field_value
-                elif type(obj_field_value) == list and tag.pos != None:
-                    index_value = obj_field_value[tag.pos]
+                elif type(obj_field_value) == list:
+                    source_tag = check_cls.get_tag_by_name(tag_name)
+                    if tag.pos is not None and tag.sub_tag is not None:
+                        list_pos = tag.pos
+                        sub_tag = tag.sub_tag
+                    elif source_tag is not None and source_tag.pos is not None and source_tag.sub_tag is not None:
+                        list_pos = source_tag.pos
+                        sub_tag = source_tag.sub_tag
+                    else:
+                        raise LookupError(f"Unable to find tag information for {tag.name}: pos and sub_tag")
+                    
+                    index_value = obj_field_value[list_pos]
                     if isinstance(index_value, PataponDataClass):
-                        return index_value.__class__.eval_tag(index_value, None, FieldTag("element_count", "source"))
+                        return index_value.__class__.eval_tag(index_value, None, sub_tag)
                     else:
                         return index_value
             return None
@@ -468,11 +481,14 @@ class PataponStaticDataClass(PataponDataClass):
             metadata: FieldMetadata = field.metadata["meta"]
             count: int = metadata.count
             func: Callable = metadata.get_from_bytes_func()
-            
-            if count > 1:
-                new_value = list(func(value) for value in raw_values[index:index + count])
-            else:
-                new_value = func(raw_values[index])
+            try:
+                if count > 1:
+                    new_value = list(func(value) for value in raw_values[index:index + count])
+                else:
+                    new_value = func(raw_values[index])
+            except UnicodeDecodeError as err:
+                raise TypeError(f"Error with field: {name}: {err.reason} {err.object}")
+                
             setattr(new_inst, name, new_value)
             index += count
         return new_inst
@@ -653,13 +669,16 @@ class PataponDynamicDataClass(PataponDataClass):
                 new_values = unpack(field_format_string, raw[:data_size])
 
                 # process the raw values into correct data types
-                func: Callable = metadata.get_from_bytes_func()
-                if count > 1:
-                    new_value = list(func(val) for val in new_values)
-                elif len(new_values) == 0:
-                    new_value = b'\x00' * size
-                else:
-                    new_value = func(new_values[0])
+                try:
+                    func: Callable = metadata.get_from_bytes_func()
+                    if count > 1:
+                        new_value = list(func(val) for val in new_values)
+                    elif len(new_values) == 0:
+                        new_value = b'\x00' * size
+                    else:
+                        new_value = func(new_values[0])
+                except UnicodeDecodeError as err:
+                    raise TypeError(f"Error with field: {name}: {err.reason} {err.object}")
 
             # set the new value and remove processed value from the raw bytes
             setattr(new_inst, name, new_value)

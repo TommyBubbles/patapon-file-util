@@ -14,7 +14,8 @@ from .generic import GenericParamHeader
 class MiracleParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("miracle_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("miracle_param_count", "source", 0, sub_tag))
 
 
 @dataclass
@@ -27,7 +28,7 @@ class MiracleParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class MiracleParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[MiracleParamInfoElement] = field(default_factory=list[MiracleParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("miracle_param_count", "count", 0)]})
+    param_list: list[MiracleParamInfoElement] = field(default_factory=list[MiracleParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("miracle_param_count", "count")]})
 
 
 

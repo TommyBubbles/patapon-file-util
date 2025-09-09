@@ -15,8 +15,9 @@ from .generic import GenericParamHeader
 class UnitParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("base_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("troop_type_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("u_base_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("u_troop_type_param_count", "source", 1, sub_tag))
 
 
 
@@ -43,7 +44,7 @@ class BaseParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("base_param_count", "count", 0)]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("u_base_param_count", "count")]})
 
 
 
@@ -65,7 +66,7 @@ class TroopTypeParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class TroopTypeParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[TroopTypeParamElement] = field(default_factory=list[TroopTypeParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("troop_type_param_count", "count", 1)]})
+    param_list: list[TroopTypeParamElement] = field(default_factory=list[TroopTypeParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("u_troop_type_param_count", "count")]})
 
 
 

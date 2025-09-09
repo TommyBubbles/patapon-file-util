@@ -15,8 +15,9 @@ from .generic import GenericParamHeader
 class SystemDataMissionParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("mission_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("extra_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("mission_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("m_extra_param_count", "source", 1, sub_tag))
 
 
 
@@ -45,7 +46,7 @@ class MissionParam(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class MissionParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[MissionParam] = field(default_factory=list[MissionParam], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("mission_param_count", "count", 0)]})
+    param_list: list[MissionParam] = field(default_factory=list[MissionParam], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("mission_param_count", "count")]})
 
 
 
@@ -61,7 +62,7 @@ class SystemDataMissionParamExtraParamElement(PataponStaticDataClass, PataponDat
 
 @dataclass
 class SystemDataMissionParamExtraParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[SystemDataMissionParamExtraParamElement] = field(default_factory=list[SystemDataMissionParamExtraParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("extra_param_count", "count", 0)]})
+    param_list: list[SystemDataMissionParamExtraParamElement] = field(default_factory=list[SystemDataMissionParamExtraParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("m_extra_param_count", "count")]})
 
 
 

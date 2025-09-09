@@ -15,9 +15,10 @@ from .generic import GenericParamHeader
 class SoundParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("mood_setting_param", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("antecedent_def_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("rule_def_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("sg_mood_setting_param", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("sg_antecedent_def_param_count", "source", 1, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("sg_rule_def_param_count", "source", 2, sub_tag))
 
 
 
@@ -31,7 +32,7 @@ class MoodSettingParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class MoodSettingParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[MoodSettingParamElement] = field(default_factory=list[MoodSettingParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sound_game_param_count", "count", 0)]})
+    param_list: list[MoodSettingParamElement] = field(default_factory=list[MoodSettingParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sg_mood_setting_param", "count")]})
 
 
 
@@ -46,7 +47,7 @@ class AntecedentDefParamElement(PataponStaticDataClass, PataponDataClassElement)
 
 @dataclass
 class AntecedentDefParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AntecedentDefParamElement] = field(default_factory=list[AntecedentDefParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("antecedent_def_param_count", "count", 1)]})
+    param_list: list[AntecedentDefParamElement] = field(default_factory=list[AntecedentDefParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sg_antecedent_def_param_count", "count")]})
 
 
 
@@ -61,7 +62,7 @@ class RuleDefParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class RuleDefParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[RuleDefParamElement] = field(default_factory=list[RuleDefParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("rule_def_param_count", "count", 2)]})
+    param_list: list[RuleDefParamElement] = field(default_factory=list[RuleDefParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sg_rule_def_param_count", "count")]})
 
 
 

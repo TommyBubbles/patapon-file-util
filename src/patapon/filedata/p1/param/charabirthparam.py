@@ -16,8 +16,9 @@ from .generic import GenericParamHeader
 class CharaBirthParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
-        cls.add_tag_to_field("partition_info_list", FieldTag("birth_param_count", "source"))
-        cls.add_tag_to_field("partition_info_list", FieldTag("adjust_damage_param_count", "source"))
+        sub_tag = FieldTag("element_count", "source")
+        cls.add_tag_to_field("partition_info_list", FieldTag("cb_birth_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("cb_adjust_damage_param_count", "source", 1, sub_tag))
 
 
 
@@ -38,7 +39,7 @@ class BirthParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BirthParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BirthParamElement] = field(default_factory=list[BirthParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("birth_param_count", "count", 0)]})
+    param_list: list[BirthParamElement] = field(default_factory=list[BirthParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cb_birth_param_count", "count")]})
 
 
 
@@ -50,7 +51,7 @@ class AdjustDamageParamElement(PataponDynamicDataClass, PataponDataClassElement)
 
 @dataclass
 class AdjustDamageParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("adjust_damage_param_count", "count", 1)]})
+    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cb_adjust_damage_param_count", "count")]})
 
 
 
