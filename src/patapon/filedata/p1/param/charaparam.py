@@ -20,7 +20,7 @@ class BasesDataCharaParamHeader(GenericParamHeader):
 
 
 
-# used by actor specific charaparam.dat files
+# used for charaparam.dat files from actor folder on a per actor basis
 @dataclass
 class CharaParam(PataponDynamicDataClass, PataponDataClassElement):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})

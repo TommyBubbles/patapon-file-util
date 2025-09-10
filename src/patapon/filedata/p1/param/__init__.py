@@ -25,5 +25,6 @@ from .unitparam import UnitParam
 
 # basesdata
 from .charaparam import CharaParam, BasesDataCharaParam
-from .facilityparam import FacilityParam
+from .facilitypersonparam import FacilityPersonParam
 from .nodenameparam import NodeName, NodeNameParam
+from .weaponequipparam import EquipParam, WeaponParam

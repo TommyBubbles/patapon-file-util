@@ -218,9 +218,9 @@
 #### loadinggroupcmn/paramlist.bnd/soundparam.dat -> SoundParam
 #### loadinggroupcmn/paramlist.bnd/squadlineparam.dat -> SquadLineParam
 #### loadinggroupcmn/paramlist.bnd/systemparam.dat -> SystemParam
-#### loadinggroupcmn/paramlist.bnd/charaparam.dat
-#### loadinggroupcmn/paramlist.bnd/facilityparam.dat
-#### loadinggroupcmn/paramlist.bnd/nodenameparam.dat
+#### loadinggroupcmn/paramlist.bnd/charaparam.dat -> BasesDataCharaParam
+#### loadinggroupcmn/paramlist.bnd/facilityparam.dat -> FacilityParam
+#### loadinggroupcmn/paramlist.bnd/nodenameparam.dat -> NodeNameParam
 #### loadinggroupcmn/paramlist.bnd/personparam.dat
 #### loadinggroupcmn/paramlist.bnd/weaponparam.dat
 #### loadinggroupcmn/paramlist.bnd/motiontimingparam.dat

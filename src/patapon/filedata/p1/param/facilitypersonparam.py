@@ -11,13 +11,13 @@ from .generic import GenericParamHeader
 
 
 @dataclass
-class FacilityParamHeader(GenericParamHeader):
+class ParamHeader(GenericParamHeader):
     @classmethod
     def add_tags(cls):
         sub_tag = FieldTag("element_count", "source")
-        cls.add_tag_to_field("partition_info_list", FieldTag("f_param_count", "source", 0, sub_tag))
-        cls.add_tag_to_field("partition_info_list", FieldTag("f_model_param_count", "source", 1, sub_tag))
-        cls.add_tag_to_field("partition_info_list", FieldTag("f_attach_param_count", "source", 2, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("fp_param_count", "source", 0, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("fp_model_param_count", "source", 1, sub_tag))
+        cls.add_tag_to_field("partition_info_list", FieldTag("fp_attach_param_count", "source", 2, sub_tag))
 
 
 @dataclass
@@ -29,7 +29,7 @@ class AuxesisParam(PataponStaticDataClass, PataponDataClassElement):
 
 
 @dataclass
-class FacilityParamElement(PataponDynamicDataClass, PataponDataClassElement):
+class ParamElement(PataponDynamicDataClass, PataponDataClassElement):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="shift-jis")})
     id: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 1)})
     poolSize: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 2)})
@@ -40,8 +40,8 @@ class FacilityParamElement(PataponDynamicDataClass, PataponDataClassElement):
 
 
 @dataclass
-class FacilityParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[FacilityParamElement] = field(default_factory=list[FacilityParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("f_param_count", "count")]})
+class ParamInfo(PataponDynamicDataClass, PataponDataClassBody):
+    param_list: list[ParamElement] = field(default_factory=list[ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("fp_param_count", "count")]})
 
 
 
@@ -68,7 +68,7 @@ class ModelParamElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class ModelParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[ModelParamElement] = field(default_factory=list[ModelParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("f_model_param_count", "count")]})
+    param_list: list[ModelParamElement] = field(default_factory=list[ModelParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("fp_model_param_count", "count")]})
 
 
 
@@ -86,14 +86,13 @@ class AttachParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class AttachParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AttachParamElement] = field(default_factory=list[AttachParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("f_attach_param_count", "count")]})
+    param_list: list[AttachParamElement] = field(default_factory=list[AttachParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("fp_attach_param_count", "count")]})
 
 
 
-# used by personparam
 @dataclass
-class FacilityParam(PataponDynamicDataClass):
-    header: FacilityParamHeader = field(default_factory=FacilityParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    facility_params: FacilityParamInfo = field(default_factory=FacilityParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+class FacilityPersonParam(PataponDynamicDataClass):
+    header: ParamHeader = field(default_factory=ParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
+    params: ParamInfo = field(default_factory=ParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
     model_params: ModelParam = field(default_factory=ModelParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
     attach_params: AttachParam = field(default_factory=AttachParam, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})
