@@ -64,7 +64,7 @@ class Test_SystemDataMissionParam:
         )
 
 
-    def test_verify_datafield_pos_effect_param(self):
+    def test_verify_datafield_pos(self):
         assert SystemDataMissionParam.verify_datafield_pos()
 
 
@@ -78,7 +78,7 @@ class Test_SystemDataMissionParam:
         assert mission_param_extra_param_last_element.get_byte_size() == 0x100
 
 
-    def test_from_bytes_effect_param(self,
+    def test_from_bytes(self,
             mission_param_header: SystemDataMissionParamHeader,
             mission_param_last_element: MissionParam,
             mission_param_extra_param_last_element: SystemDataMissionParamExtraParamElement

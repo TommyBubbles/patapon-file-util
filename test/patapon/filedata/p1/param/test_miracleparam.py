@@ -36,7 +36,7 @@ def miracle_param_header() -> MiracleParamHeader:
     )
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert MiracleParam.verify_datafield_pos()
 
 
@@ -48,7 +48,7 @@ def test_get_byte_size(
     assert miracle_param_last_element.get_byte_size() == 0x48
 
 
-def test_from_bytes_effect_param(
+def test_from_bytes(
         miracle_param_last_element: MiracleParamInfoElement,
         miracle_param_header: MiracleParamHeader
         ):

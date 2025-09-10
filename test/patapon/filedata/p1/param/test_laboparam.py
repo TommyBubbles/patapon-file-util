@@ -34,7 +34,7 @@ def labo_param_header() -> LaboParamHeader:
     )
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert LaboParam.verify_datafield_pos()
 
 
@@ -46,7 +46,7 @@ def test_get_byte_size(
     assert labo_param_element.get_byte_size() == 0x80
 
 
-def test_from_bytes_effect_param(
+def test_from_bytes(
         labo_param_element: LaboParamInfoElement,
         labo_param_header: LaboParamHeader
         ):

@@ -37,7 +37,7 @@ def sound_game_param_last_element() -> SoundGameParamInfoElement:
 
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert SoundGameParam.verify_datafield_pos()
 
 
@@ -49,7 +49,7 @@ def test_get_byte_size(
     assert sound_game_param_last_element.get_byte_size() == 0x64
 
 
-def test_from_bytes_effect_param(
+def test_from_bytes(
         sound_game_param_header: SoundGameParamHeader,
         sound_game_param_last_element: SoundGameParamInfoElement
         ):

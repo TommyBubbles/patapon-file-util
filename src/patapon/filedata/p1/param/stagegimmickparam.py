@@ -12,7 +12,7 @@ from . import DamageParam
 
 
 @dataclass
-class StageAreaParamHeader(PataponStaticDataClass, PataponDataClassHeader):
+class StageGimmickParamHeader(PataponStaticDataClass, PataponDataClassHeader):
     id: str = field(default="GIMC", metadata={"meta": FieldMetadata("string", 0, size=0x4)})
     version: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
     numGimmickParam: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2), "tags": [FieldTag("gimmick_param_count", "source")]})
@@ -64,6 +64,6 @@ class ModelParam(PataponDynamicDataClass, PataponDataClassBody):
 
 @dataclass
 class StageGimmickParam(PataponDynamicDataClass):
-    header: StageAreaParamHeader = field(default_factory=StageAreaParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
+    header: StageGimmickParamHeader = field(default_factory=StageGimmickParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
     gimmickParam: GimmickParam = field(default_factory=GimmickParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
     modelParam: ModelParam = field(default_factory=ModelParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})

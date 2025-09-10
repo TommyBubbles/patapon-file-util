@@ -42,7 +42,7 @@ def instruction_command_param_last_element() -> InstructionCommandParamInfoEleme
 
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert InstructionCommandParam.verify_datafield_pos()
 
 

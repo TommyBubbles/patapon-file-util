@@ -53,7 +53,7 @@ def attack_material_table_last_element() -> AttackMaterialTableElement:
 
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert HitEffectTableParam.verify_datafield_pos()
 
 
@@ -67,7 +67,7 @@ def test_get_byte_size(
     assert attack_material_table_last_element.get_byte_size() == 0x80
 
 
-def test_from_bytes_effect_param(
+def test_from_bytes(
         hit_effect_table_param_header: HitEffectTableParamHeader,
         base_param_last_element: BaseParamElement,
         attack_material_table_last_element: AttackMaterialTableElement

@@ -54,13 +54,11 @@
 ##### - mission.bnd/bgm.dat/\*.lrt
 ##### - mission.bnd/bgm.dat/param.dat -> BGMParam
 
-
 ##### - predata.bnd
 ##### - predata.bnd/missionmessage.lbnd
 ##### - predata.bnd/missionmessage.lbnd/\*.bnd
 ##### - predata.bnd/missionmessage.lbnd/\*.bnd/mission.pac
 ##### - predata.bnd/missionparam.dat -> MissionParam
-
 
 ##### - stagedata.bnd
 ##### - stagedata.bnd/stage.bns
@@ -72,7 +70,6 @@
 ##### - stagedata.bnd/stage.bns/unknown_3.bnd/\*.gxt
 ##### - stagedata.bnd/stage.bns/unknown_4.bnd
 ##### - stagedata.bnd/stage.bns/unknown_4.bnd/\*.sgd
-
 
 ##### - unitdata.bnd
 ##### - unitdata.bnd/unit.bnd
@@ -219,18 +216,15 @@
 #### loadinggroupcmn/paramlist.bnd/squadlineparam.dat -> SquadLineParam
 #### loadinggroupcmn/paramlist.bnd/systemparam.dat -> SystemParam
 #### loadinggroupcmn/paramlist.bnd/charaparam.dat -> BasesDataCharaParam
-#### loadinggroupcmn/paramlist.bnd/facilityparam.dat -> FacilityParam
+#### loadinggroupcmn/paramlist.bnd/facilityparam.dat -> FacilityPersonParam
 #### loadinggroupcmn/paramlist.bnd/nodenameparam.dat -> NodeNameParam
-#### loadinggroupcmn/paramlist.bnd/personparam.dat
-#### loadinggroupcmn/paramlist.bnd/weaponparam.dat
-#### loadinggroupcmn/paramlist.bnd/motiontimingparam.dat
-#### loadinggroupcmn/paramlist.bnd/motiontypeparam.dat
-#### loadinggroupcmn/paramlist.bnd/squadactivityparam.dat
-#### loadinggroupcmn/paramlist.bnd/squadcrtlfuncparam.dat
-#### loadinggroupcmn/paramlist.bnd/unitlayoutparam_e.dat
-
-
-
+#### loadinggroupcmn/paramlist.bnd/personparam.dat -> FacilityPersonParam
+#### loadinggroupcmn/paramlist.bnd/weaponparam.dat -> WeaponEquipParam
+#### loadinggroupcmn/paramlist.bnd/motiontimingparam.dat -> MotionTimingParam
+#### loadinggroupcmn/paramlist.bnd/motiontypeparam.dat -> MotionTypeParam
+#### loadinggroupcmn/paramlist.bnd/squadactivityparam.dat -> SquadActivityParam
+#### loadinggroupcmn/paramlist.bnd/squadcrtlfuncparam.dat -> SquadCtrlFuncParam
+#### loadinggroupcmn/paramlist.bnd/unitlayoutparam_e.dat -> UnitLayoutParamE
 #### loadinggroupcmn/scriptlist.bnd
 #### loadinggroupcmn/scriptlist.bnd/effect.pac
 #### loadinggroupcmn/scriptlist.bnd/itemtable.pac

@@ -28,3 +28,10 @@ from .charaparam import CharaParam, BasesDataCharaParam
 from .facilitypersonparam import FacilityPersonParam
 from .nodenameparam import NodeName, NodeNameParam
 from .weaponequipparam import EquipParam, WeaponParam
+
+# gamedata
+from .motiontimingparam import MotionTimingParam
+from .motiontypeparam import MotionTypeParam
+from .squadactivityparam import SquadActivityParam
+from .squadctrlfuncparam import SquadCtrlFuncParam
+from .unitlayoutparam_e import UnitLayoutParamE

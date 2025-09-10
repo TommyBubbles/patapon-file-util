@@ -34,7 +34,7 @@ def game_param_header() -> GameParamHeader:
     )
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert GameParam.verify_datafield_pos()
 
 
@@ -46,7 +46,7 @@ def test_get_byte_size(
     assert game_param_element.get_byte_size() == 0x80
 
 
-def test_from_bytes_effect_param(
+def test_from_bytes(
         game_param_header: GameParamHeader,
         game_param_element: GameParamInfoElement
         ):

@@ -60,7 +60,7 @@ def cooking_param_last_element() -> CookingParamInfoElement:
 
 
 
-def test_verify_datafield_pos_chara_group_param():
+def test_verify_datafield_pos():
     assert CookingParam.verify_datafield_pos()
 
 
@@ -72,7 +72,7 @@ def test_get_byte_size(
     assert cooking_param_last_element.get_byte_size() == 0x128
 
 
-def test_from_bytes_carnival_param(
+def test_from_bytes(
         cooking_param_header: CookingParamHeader,
         cooking_param_last_element: CookingParam
         ):

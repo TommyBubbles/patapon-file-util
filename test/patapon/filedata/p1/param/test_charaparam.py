@@ -93,7 +93,7 @@ class Test_BasesDataCharaParam:
 
 
 
-    def test_verify_datafield_pos_effect_param(self):
+    def test_verify_datafield_pos(self):
         assert BasesDataCharaParam.verify_datafield_pos()
 
 

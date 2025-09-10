@@ -82,7 +82,7 @@ def equip_param_last_element() -> NodeName:
 
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert NodeNameParam.verify_datafield_pos()
 
 

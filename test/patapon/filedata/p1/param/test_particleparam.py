@@ -37,7 +37,7 @@ def particle_param_last_element() -> ParticleParamInfoElement:
 
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert ParticleParam.verify_datafield_pos()
 
 
@@ -49,7 +49,7 @@ def test_get_byte_size(
     assert particle_param_last_element.get_byte_size() == 0x10
 
 
-def test_from_bytes_effect_param(
+def test_from_bytes(
         particle_param_header: ParticleParamHeader,
         particle_param_last_element: ParticleParamInfoElement
         ):

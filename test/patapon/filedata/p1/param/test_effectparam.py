@@ -92,7 +92,7 @@ def effect_damage_param_last_element() -> EffectDamageParamElement:
 
 
 
-def test_verify_datafield_pos_effect_param():
+def test_verify_datafield_pos():
     assert EffectParam.verify_datafield_pos()
 
 
@@ -106,7 +106,7 @@ def test_get_byte_size(
     assert effect_damage_param_last_element.get_byte_size() == 0x120
 
 
-def test_from_bytes_effect_param(
+def test_from_bytes(
         effect_param_header: EffectParamHeader,
         effect_param_last_element: EffectParam,
         effect_damage_param_last_element: EffectDamageParamElement
