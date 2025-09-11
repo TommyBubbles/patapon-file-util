@@ -32,7 +32,7 @@ class MoodSettingParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class MoodSettingParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[MoodSettingParamElement] = field(default_factory=list[MoodSettingParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sg_mood_setting_param", "count")]})
+    param_list: list[MoodSettingParamElement] = field(default_factory=list[MoodSettingParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("sg_mood_setting_param", "count")]})
 
 
 
@@ -47,7 +47,7 @@ class AntecedentDefParamElement(PataponStaticDataClass, PataponDataClassElement)
 
 @dataclass
 class AntecedentDefParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AntecedentDefParamElement] = field(default_factory=list[AntecedentDefParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sg_antecedent_def_param_count", "count")]})
+    param_list: list[AntecedentDefParamElement] = field(default_factory=list[AntecedentDefParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("sg_antecedent_def_param_count", "count")]})
 
 
 
@@ -62,13 +62,13 @@ class RuleDefParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class RuleDefParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[RuleDefParamElement] = field(default_factory=list[RuleDefParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sg_rule_def_param_count", "count")]})
+    param_list: list[RuleDefParamElement] = field(default_factory=list[RuleDefParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("sg_rule_def_param_count", "count")]})
 
 
 
 @dataclass
 class SoundParam(PataponDynamicDataClass):
-    header: SoundParamHeader = field(default_factory=SoundParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    mood_setting_params: MoodSettingParam = field(default_factory=MoodSettingParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    antecedent_def_params: AntecedentDefParam = field(default_factory=AntecedentDefParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
-    rule_def_params: RuleDefParam = field(default_factory=RuleDefParam, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})
+    header: SoundParamHeader = field(default_factory=SoundParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    mood_setting_params: MoodSettingParam = field(default_factory=MoodSettingParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    antecedent_def_params: AntecedentDefParam = field(default_factory=AntecedentDefParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})
+    rule_def_params: RuleDefParam = field(default_factory=RuleDefParam, metadata={"meta": FieldMetadata("dataclass", 3), "tags": [FieldTag("file", "body")]})

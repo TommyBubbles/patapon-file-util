@@ -37,11 +37,11 @@ class BaseParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("mtype_base_param_count", "count")]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("mtype_base_param_count", "count")]})
 
 
 
 @dataclass
 class MotionTypeParam(PataponDynamicDataClass):
-    header: MotionTypeParamHeader = field(default_factory=MotionTypeParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: MotionTypeParamHeader = field(default_factory=MotionTypeParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

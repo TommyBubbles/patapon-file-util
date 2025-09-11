@@ -45,7 +45,7 @@ class CharaParam(PataponDynamicDataClass, PataponDataClassElement):
     aSeTable: list[bytes] = field(default_factory=list[bytes], metadata={"meta": FieldMetadata("bytes", 19, count=16, size=4)})
     str1: str = field(default="", metadata={"meta": FieldMetadata("string", 20, size=0x20)})
     str2: str = field(default="", metadata={"meta": FieldMetadata("string", 21, size=0x20)})
-    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("body", 22)})
+    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("dataclass", 22)})
     modelFilename: str = field(default="", metadata={"meta": FieldMetadata("string", 23, size=0x20)})
     actorName: str = field(default="", metadata={"meta": FieldMetadata("string", 24, size=0x20)})
     charaname: str = field(default="", metadata={"meta": FieldMetadata("string", 25, size=0x20, encoding="shift-jis")})
@@ -60,11 +60,11 @@ class CharaParam(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class CharaParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CharaParam] = field(default_factory=list[CharaParam], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("chara_param_count", "count")]})
+    param_list: list[CharaParam] = field(default_factory=list[CharaParam], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("chara_param_count", "count")]})
 
 
 
 @dataclass
 class BasesDataCharaParam(PataponDynamicDataClass):
-    header: BasesDataCharaParamHeader = field(default_factory=BasesDataCharaParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    chara_params: CharaParamInfo = field(default_factory=CharaParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: BasesDataCharaParamHeader = field(default_factory=BasesDataCharaParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    chara_params: CharaParamInfo = field(default_factory=CharaParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

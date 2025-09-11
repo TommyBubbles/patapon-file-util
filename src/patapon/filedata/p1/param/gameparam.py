@@ -26,11 +26,11 @@ class GameParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class GameParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[GameParamInfoElement] = field(default_factory=list[GameParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("game_param_count", "count")]})
+    param_list: list[GameParamInfoElement] = field(default_factory=list[GameParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("game_param_count", "count")]})
 
 
 
 @dataclass
 class GameParam(PataponDynamicDataClass):
-    header: GameParamHeader = field(default_factory=GameParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    game_params: GameParamInfo = field(default_factory=GameParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: GameParamHeader = field(default_factory=GameParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    game_params: GameParamInfo = field(default_factory=GameParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

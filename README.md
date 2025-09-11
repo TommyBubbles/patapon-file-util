@@ -188,14 +188,26 @@
 
 ### loadinggroupcmn
 #### loadinggroupcmn/actorresourcenode.bnd
-#### loadinggroupcmn/actorresourcenode.bnd/\*.arc
+#### loadinggroupcmn/actorresourcenode.bnd/\*.arc -> Unit
+#### loadinggroupcmn/actorresourcenode.bnd/unit\*.bnd -> Unit
+
 #### loadinggroupcmn/layoutlist.layl
 #### loadinggroupcmn/layoutlist.layl/scenelayoutparam\*.dat
+
 #### loadinggroupcmn/modellist.bnd
 #### loadinggroupcmn/modellist.bnd/loading.mdll
 #### loadinggroupcmn/modellist.bnd/loading.mdll/\*.gxx
 #### loadinggroupcmn/modellist.bnd/loading.mdll/\*.gxt
 #### loadinggroupcmn/modellist.bnd/system.mdll
+#### loadinggroupcmn/modellist.bnd/camp.mdll
+#### loadinggroupcmn/modellist.bnd/camp.mdll/\*.gxx
+#### loadinggroupcmn/modellist.bnd/game.mdll
+#### loadinggroupcmn/modellist.bnd/game.mdll/\*.gxx
+#### loadinggroupcmn/modellist.bnd/game.mdll/\*.gxt
+#### loadinggroupcmn/modellist.bnd/organization.mdll
+#### loadinggroupcmn/modellist.bnd/organization.mdll/\*.gxx
+#### loadinggroupcmn/modellist.bnd/organization.mdll/\*.gxt
+
 #### loadinggroupcmn/paramlist.bnd
 #### loadinggroupcmn/paramlist.bnd/abnormalstatusparam.dat -> AbnormalStatusParam
 #### loadinggroupcmn/paramlist.bnd/carnivalpowerevalutateparam.dat -> CarnivalPowerEvalutateParam
@@ -231,12 +243,27 @@
 #### loadinggroupcmn/scriptlist.bnd/labo.pac
 #### loadinggroupcmn/scriptlist.bnd/system.pac
 #### loadinggroupcmn/scriptlist.bnd/actor.pac
+#### loadinggroupcmn/scriptlist.bnd/camp_event.pac -> Stage PAC
+#### loadinggroupcmn/scriptlist.bnd/colony_data.pac -> PAC
+#### loadinggroupcmn/scriptlist.bnd/gamemain.pac -> PAC
+#### loadinggroupcmn/scriptlist.bnd/gamemodule.pac -> PAC
+#### loadinggroupcmn/scriptlist.bnd/march.pac -> PAC
+#### loadinggroupcmn/scriptlist.bnd/missionmain.pac -> PAC
+#### loadinggroupcmn/scriptlist.bnd/unitbase.pac -> PAC
+#### loadinggroupcmn/scriptlist.bnd/unitsquad.pac -> PAC
+
+#### loadinggroupcmn/sound.dat
+#### loadinggroupcmn/sound.dat/\*.sgd
+
 
 #### loadinggroupcmn/texturelist.bnd
 #### loadinggroupcmn/texturelist.bnd/system.texls
 #### loadinggroupcmn/texturelist.bnd/system.texls/\*.gxt
 #### loadinggroupcmn/texturelist.bnd/system.texl
 #### loadinggroupcmn/texturelist.bnd/system.texl/\*.gxt
+#### loadinggroupcmn/texturelist.bnd/camp.bnd
+#### loadinggroupcmn/texturelist.bnd/camp.bnd/\*.gxt
+#### loadinggroupcmn/texturelist.bnd/game.bnd
 
 
 ### movie

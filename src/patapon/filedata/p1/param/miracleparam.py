@@ -28,11 +28,11 @@ class MiracleParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class MiracleParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[MiracleParamInfoElement] = field(default_factory=list[MiracleParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("miracle_param_count", "count")]})
+    param_list: list[MiracleParamInfoElement] = field(default_factory=list[MiracleParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("miracle_param_count", "count")]})
 
 
 
 @dataclass
 class MiracleParam(PataponDynamicDataClass):
-    header: MiracleParamHeader = field(default_factory=MiracleParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    miracle_params: MiracleParamInfo = field(default_factory=MiracleParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: MiracleParamHeader = field(default_factory=MiracleParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    miracle_params: MiracleParamInfo = field(default_factory=MiracleParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

@@ -52,11 +52,11 @@ class AbnormalStatusParamInfoElement(PataponStaticDataClass, PataponDataClassEle
 
 @dataclass
 class AbnormalStatusParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    info_list: list[AbnormalStatusParamInfoElement] = field(default_factory=list[AbnormalStatusParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("abnormal_status_param_count", "count")]})
+    info_list: list[AbnormalStatusParamInfoElement] = field(default_factory=list[AbnormalStatusParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("abnormal_status_param_count", "count")]})
 
 
 
 @dataclass
 class AbnormalStatusParam(PataponDynamicDataClass):
-    header: AbnormalStatusParamHeader = field(default_factory=AbnormalStatusParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    params: AbnormalStatusParamInfo = field(default_factory=AbnormalStatusParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: AbnormalStatusParamHeader = field(default_factory=AbnormalStatusParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    params: AbnormalStatusParamInfo = field(default_factory=AbnormalStatusParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

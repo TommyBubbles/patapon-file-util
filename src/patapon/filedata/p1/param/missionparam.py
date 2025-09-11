@@ -46,7 +46,7 @@ class MissionParam(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class MissionParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[MissionParam] = field(default_factory=list[MissionParam], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("mission_param_count", "count")]})
+    param_list: list[MissionParam] = field(default_factory=list[MissionParam], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("mission_param_count", "count")]})
 
 
 
@@ -62,12 +62,12 @@ class SystemDataMissionParamExtraParamElement(PataponStaticDataClass, PataponDat
 
 @dataclass
 class SystemDataMissionParamExtraParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[SystemDataMissionParamExtraParamElement] = field(default_factory=list[SystemDataMissionParamExtraParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("m_extra_param_count", "count")]})
+    param_list: list[SystemDataMissionParamExtraParamElement] = field(default_factory=list[SystemDataMissionParamExtraParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("m_extra_param_count", "count")]})
 
 
 
 @dataclass
 class SystemDataMissionParam(PataponDynamicDataClass):
-    header: SystemDataMissionParamHeader = field(default_factory=SystemDataMissionParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    mission_params: MissionParamInfo = field(default_factory=MissionParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    extra_params: SystemDataMissionParamExtraParam = field(default_factory=SystemDataMissionParamExtraParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: SystemDataMissionParamHeader = field(default_factory=SystemDataMissionParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    mission_params: MissionParamInfo = field(default_factory=MissionParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    extra_params: SystemDataMissionParamExtraParam = field(default_factory=SystemDataMissionParamExtraParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

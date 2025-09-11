@@ -29,11 +29,11 @@ class SoundGameParamInfoElement(PataponStaticDataClass, PataponDataClassElement)
 
 @dataclass
 class SoundGameParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[SoundGameParamInfoElement] = field(default_factory=list[SoundGameParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sound_game_param_count", "count")]})
+    param_list: list[SoundGameParamInfoElement] = field(default_factory=list[SoundGameParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("sound_game_param_count", "count")]})
 
 
 
 @dataclass
 class SoundGameParam(PataponDynamicDataClass):
-    header: SoundGameParamHeader = field(default_factory=SoundGameParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    sound_game_params: SoundGameParamInfo = field(default_factory=SoundGameParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: SoundGameParamHeader = field(default_factory=SoundGameParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    sound_game_params: SoundGameParamInfo = field(default_factory=SoundGameParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

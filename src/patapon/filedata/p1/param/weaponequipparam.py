@@ -31,18 +31,18 @@ class EquipParam(PataponDynamicDataClass, PataponDataClassElement):
     troopId: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 6)})
     shotEffectId: int = field(default=0, metadata={"meta": FieldMetadata("signed_int", 7)})
     filler_2: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 8, count=7)})
-    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("body", 9)})
+    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("dataclass", 9)})
     modelFileName: str = field(default="", metadata={"meta": FieldMetadata("string", 10, size=0x20)})
     effectModelName: str = field(default="", metadata={"meta": FieldMetadata("string", 11, size=0x20)})
 
 
 @dataclass
 class EquipParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[EquipParam] = field(default_factory=list[EquipParam], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("equip_param_count", "count")]})
+    param_list: list[EquipParam] = field(default_factory=list[EquipParam], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("equip_param_count", "count")]})
 
 
 
 @dataclass
 class WeaponParam(PataponDynamicDataClass):
-    header: WeaponParamHeader = field(default_factory=WeaponParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    equip_params: EquipParamInfo = field(default_factory=EquipParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: WeaponParamHeader = field(default_factory=WeaponParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    equip_params: EquipParamInfo = field(default_factory=EquipParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

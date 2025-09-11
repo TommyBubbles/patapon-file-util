@@ -53,25 +53,25 @@ class EffectParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class EffectParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[EffectParamInfoElement] = field(default_factory=list[EffectParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_param_count", "count")]})
+    param_list: list[EffectParamInfoElement] = field(default_factory=list[EffectParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("effect_param_count", "count")]})
 
 
 
 @dataclass
 class EffectDamageParamElement(PataponDynamicDataClass, PataponDataClassElement):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20)})
-    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("body", 1)})
+    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("dataclass", 1)})
 
 
 @dataclass
 class EffectDamageParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[EffectDamageParamElement] = field(default_factory=list[EffectDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("effect_damage_param_count", "count")]})
+    param_list: list[EffectDamageParamElement] = field(default_factory=list[EffectDamageParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("effect_damage_param_count", "count")]})
 
 
 
 @dataclass
 class EffectParam(PataponDynamicDataClass):
-    header: EffectParamHeader = field(default_factory=EffectParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    effect_params: EffectParamInfo = field(default_factory=EffectParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    effect_damage_params: EffectDamageParam = field(default_factory=EffectDamageParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: EffectParamHeader = field(default_factory=EffectParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    effect_params: EffectParamInfo = field(default_factory=EffectParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    effect_damage_params: EffectDamageParam = field(default_factory=EffectDamageParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})
     

@@ -3,9 +3,6 @@ sys.path.insert(0, ".\\src")
 # from patapon.filedata.p1.systemdata.itemtable_pac import ItemTable
 # from patapon.filedata.p2.itemtable_pac import ItemTable
 # from patapon.filedata.p2.itemmessage_msg import ItemMessage
-from patapon.filedata.p1.param import DamageParam
-
-print(hex(DamageParam().get_byte_size()))
 
 # item_table_file_path = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@scriptlist\\itemtable.pac"
 # # item_table_file_path = "D:\\Patapon\\Patapon Stuff\\Patapon 2\\@DATA_CMN\\loadinggroup\\@systemdata\\@systemdata\\@loadinggroupcmn\\@scriptlist\\itemtable.pac"
@@ -45,3 +42,29 @@ print(hex(DamageParam().get_byte_size()))
 
 #     with open(".\\replay_missionscript.pac", "wb") as output:
 #         output.write(new_file_contents)
+
+
+
+# from hashlib import sha1, md5
+
+
+# with open('D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\abnormalstatusparam.dat', 'rb') as file:
+#     raw = file.read()
+#     sha1_hash = sha1(raw)
+#     md5_hash = md5(raw)
+#     print(sha1_hash.hexdigest())
+#     print(md5_hash.hexdigest())
+#     print(hex(0x08584955))
+
+
+
+from patapon.filedata.p1.bnd import BND
+
+
+with open("D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\DATA_CMN.BND", "rb") as file:
+    raw = file.read()
+    test: BND = BND.from_bytes(raw)
+    print(test.header)
+    print(len(test.partition_info.info_list))
+    for i in test.partition_info.info_list:
+        print(i)

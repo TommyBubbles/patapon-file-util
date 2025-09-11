@@ -35,11 +35,11 @@ class InstructionCommandParamInfoElement(PataponStaticDataClass, PataponDataClas
 
 @dataclass
 class InstructionCommandParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[InstructionCommandParamInfoElement] = field(default_factory=list[InstructionCommandParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("instruction_command_param_count", "count")]})
+    param_list: list[InstructionCommandParamInfoElement] = field(default_factory=list[InstructionCommandParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("instruction_command_param_count", "count")]})
 
 
 
 @dataclass
 class InstructionCommandParam(PataponDynamicDataClass):
-    header: InstructionCommandParamHeader = field(default_factory=InstructionCommandParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    instruction_command_params: InstructionCommandParamInfo = field(default_factory=InstructionCommandParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: InstructionCommandParamHeader = field(default_factory=InstructionCommandParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    instruction_command_params: InstructionCommandParamInfo = field(default_factory=InstructionCommandParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

@@ -41,12 +41,12 @@ class BaseParamElement(PataponDynamicDataClass, PataponDataClassElement):
     str3: str = field(default="", metadata={"meta": FieldMetadata("string", 15, size=0x20)})
     str4: str = field(default="", metadata={"meta": FieldMetadata("string", 16, size=0x20)})
     str5: str = field(default="", metadata={"meta": FieldMetadata("string", 17, size=0x20)})
-    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("body", 18)})
+    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("dataclass", 18)})
 
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sa_base_param_count", "count")]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("sa_base_param_count", "count")]})
 
 
 
@@ -66,12 +66,12 @@ class MissileParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class MissileParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[MissileParamElement] = field(default_factory=list[MissileParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("sa_missile_param_count", "count")]})
+    param_list: list[MissileParamElement] = field(default_factory=list[MissileParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("sa_missile_param_count", "count")]})
 
 
 
 @dataclass
 class SquadActivityParam(PataponDynamicDataClass):
-    header: SquadActivityParamHeader = field(default_factory=SquadActivityParamHeader, metadata={"meta": FieldMetadata("header", 0, data_size=0x40), "tags": [FieldTag("file", "header")]})
-    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    missile_params: MissileParam = field(default_factory=MissileParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: SquadActivityParamHeader = field(default_factory=SquadActivityParamHeader, metadata={"meta": FieldMetadata("dataclass", 0, data_size=0x40), "tags": [FieldTag("file", "header")]})
+    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    missile_params: MissileParam = field(default_factory=MissileParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

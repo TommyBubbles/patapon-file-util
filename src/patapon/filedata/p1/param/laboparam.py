@@ -26,11 +26,11 @@ class LaboParamInfoElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class LaboParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[LaboParamInfoElement] = field(default_factory=list[LaboParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("labo_param_count", "count")]})
+    param_list: list[LaboParamInfoElement] = field(default_factory=list[LaboParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("labo_param_count", "count")]})
 
 
 
 @dataclass
 class LaboParam(PataponDynamicDataClass):
-    header: LaboParamHeader = field(default_factory=LaboParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    labo_params: LaboParamInfo = field(default_factory=LaboParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: LaboParamHeader = field(default_factory=LaboParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    labo_params: LaboParamInfo = field(default_factory=LaboParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

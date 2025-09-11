@@ -30,7 +30,7 @@ class Unknown1ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown1Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("s_unknown_1_param_count", "count")]})
+    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("s_unknown_1_param_count", "count")]})
 
 
 
@@ -43,12 +43,12 @@ class Unknown2ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown2Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("s_unknown_2_param_count", "count")]})
+    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("s_unknown_2_param_count", "count")]})
 
 
 
 @dataclass
 class SystemParam(PataponDynamicDataClass):
-    header: SystemParamHeader = field(default_factory=SystemParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    unknown_1_params: Unknown1Param = field(default_factory=Unknown1Param, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    unknown_2_params: Unknown2Param = field(default_factory=Unknown2Param, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: SystemParamHeader = field(default_factory=SystemParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    unknown_1_params: Unknown1Param = field(default_factory=Unknown1Param, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    unknown_2_params: Unknown2Param = field(default_factory=Unknown2Param, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

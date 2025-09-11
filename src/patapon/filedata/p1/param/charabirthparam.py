@@ -39,24 +39,24 @@ class BirthParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BirthParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BirthParamElement] = field(default_factory=list[BirthParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cb_birth_param_count", "count")]})
+    param_list: list[BirthParamElement] = field(default_factory=list[BirthParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cb_birth_param_count", "count")]})
 
 
 
 @dataclass
 class AdjustDamageParamElement(PataponDynamicDataClass, PataponDataClassElement):
     name: str = field(default="", metadata={"meta": FieldMetadata("string", 0, size=0x20, encoding="shift-jis")})
-    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("body", 1)})
+    damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("dataclass", 1)})
 
 
 @dataclass
 class AdjustDamageParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cb_adjust_damage_param_count", "count")]})
+    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cb_adjust_damage_param_count", "count")]})
 
 
 
 @dataclass
 class CharaBirthParam(PataponDynamicDataClass):
-    header: CharaBirthParamHeader = field(default_factory=CharaBirthParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    birth_params: BirthParam = field(default_factory=BirthParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    adjust_damage_params: AdjustDamageParam = field(default_factory=AdjustDamageParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: CharaBirthParamHeader = field(default_factory=CharaBirthParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    birth_params: BirthParam = field(default_factory=BirthParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    adjust_damage_params: AdjustDamageParam = field(default_factory=AdjustDamageParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

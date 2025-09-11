@@ -30,11 +30,11 @@ class CharaGroupParamInfoElement(PataponStaticDataClass, PataponDataClassElement
 
 @dataclass
 class CharaGroupParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CharaGroupParamInfoElement] = field(default_factory=list[CharaGroupParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("chara_group_param_count", "count")]})
+    param_list: list[CharaGroupParamInfoElement] = field(default_factory=list[CharaGroupParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("chara_group_param_count", "count")]})
 
 
 
 @dataclass
 class CharaGroupParam(PataponDynamicDataClass):
-    header: CharaGroupParamHeader = field(default_factory=CharaGroupParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    chara_group_params: CharaGroupParamInfo = field(default_factory=CharaGroupParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: CharaGroupParamHeader = field(default_factory=CharaGroupParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    chara_group_params: CharaGroupParamInfo = field(default_factory=CharaGroupParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

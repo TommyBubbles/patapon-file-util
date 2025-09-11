@@ -51,7 +51,7 @@ class BaseParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("mtiming_base_param_count", "count")]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("mtiming_base_param_count", "count")]})
 
 
 
@@ -65,12 +65,12 @@ class NameListParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class NameListParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[NameListParamElement] = field(default_factory=list[NameListParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("mtiming_name_list_param_count", "count")]})
+    param_list: list[NameListParamElement] = field(default_factory=list[NameListParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("mtiming_name_list_param_count", "count")]})
 
 
 
 @dataclass
 class MotionTimingParam(PataponDynamicDataClass):
-    header: MotionTimingParamHeader = field(default_factory=MotionTimingParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    name_list_params: NameListParam = field(default_factory=NameListParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: MotionTimingParamHeader = field(default_factory=MotionTimingParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    name_list_params: NameListParam = field(default_factory=NameListParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

@@ -45,7 +45,7 @@ class GlobalSettingsParamElement(PataponStaticDataClass, PataponDataClassElement
 
 @dataclass
 class GlobalSettingsParam(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[GlobalSettingsParamElement] = field(default_factory=list[GlobalSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_global_settings_count", "count")]})
+    settings_list: list[GlobalSettingsParamElement] = field(default_factory=list[GlobalSettingsParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cpepb_global_settings_count", "count")]})
 
 
 
@@ -64,7 +64,7 @@ class RegularSettingsParamElement(PataponStaticDataClass, PataponDataClassElemen
 
 @dataclass
 class RegularSettingsParam(PataponDynamicDataClass, PataponDataClassBody):
-    settings_list: list[RegularSettingsParamElement] = field(default_factory=list[RegularSettingsParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_regular_settings_count", "count")]})
+    settings_list: list[RegularSettingsParamElement] = field(default_factory=list[RegularSettingsParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cpepb_regular_settings_count", "count")]})
 
 
 
@@ -84,7 +84,7 @@ class CommonParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class CommonParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[CommonParamElement] = field(default_factory=list[CommonParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_common_param_count", "count")]})
+    param_list: list[CommonParamElement] = field(default_factory=list[CommonParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cpepb_common_param_count", "count")]})
 
 
 
@@ -102,7 +102,7 @@ class Unknown1ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown1Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_unknown_1_param_count", "count")]})
+    param_list: list[Unknown1ParamElement] = field(default_factory=list[Unknown1ParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cpepb_unknown_1_param_count", "count")]})
 
 
 
@@ -116,15 +116,15 @@ class Unknown2ParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unknown2Param(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("cpepb_unknown_2_param_count", "count")]})
+    param_list: list[Unknown2ParamElement] = field(default_factory=list[Unknown2ParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cpepb_unknown_2_param_count", "count")]})
 
 
 
 @dataclass
 class CarnivalPowerEvalutateParamBases(PataponDynamicDataClass):
-    header: CarnivalPowerEvalutateParamBasesHeader = field(default_factory=CarnivalPowerEvalutateParamBasesHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    global_settings: GlobalSettingsParam = field(default_factory=GlobalSettingsParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    regular_settings: RegularSettingsParam = field(default_factory=RegularSettingsParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
-    common_params: CommonParam = field(default_factory=CommonParam, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})
-    unknown_1: Unknown1Param = field(default_factory=Unknown1Param, metadata={"meta": FieldMetadata("body", 4), "tags": [FieldTag("file", "body")]})
-    unknown_2: Unknown2Param = field(default_factory=Unknown2Param, metadata={"meta": FieldMetadata("body", 5), "tags": [FieldTag("file", "body")]})
+    header: CarnivalPowerEvalutateParamBasesHeader = field(default_factory=CarnivalPowerEvalutateParamBasesHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    global_settings: GlobalSettingsParam = field(default_factory=GlobalSettingsParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    regular_settings: RegularSettingsParam = field(default_factory=RegularSettingsParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})
+    common_params: CommonParam = field(default_factory=CommonParam, metadata={"meta": FieldMetadata("dataclass", 3), "tags": [FieldTag("file", "body")]})
+    unknown_1: Unknown1Param = field(default_factory=Unknown1Param, metadata={"meta": FieldMetadata("dataclass", 4), "tags": [FieldTag("file", "body")]})
+    unknown_2: Unknown2Param = field(default_factory=Unknown2Param, metadata={"meta": FieldMetadata("dataclass", 5), "tags": [FieldTag("file", "body")]})

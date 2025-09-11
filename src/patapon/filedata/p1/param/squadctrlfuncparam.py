@@ -53,11 +53,11 @@ class BaseParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("scf_base_param_count", "count")]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("scf_base_param_count", "count")]})
 
 
 
 @dataclass
 class SquadCtrlFuncParam(PataponDynamicDataClass):
-    header: SquadCtrlFuncParamHeader = field(default_factory=SquadCtrlFuncParamHeader, metadata={"meta": FieldMetadata("header", 0, data_size=0x40), "tags": [FieldTag("file", "header")]})
-    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: SquadCtrlFuncParamHeader = field(default_factory=SquadCtrlFuncParamHeader, metadata={"meta": FieldMetadata("dataclass", 0, data_size=0x40), "tags": [FieldTag("file", "header")]})
+    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})

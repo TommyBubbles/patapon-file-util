@@ -15,6 +15,7 @@ class FieldType(Enum):
     signed_int8 = auto()
     unsigned_int8 = auto()
     float = auto()
+    dataclass = auto()
     header = auto()
     body = auto()
     element_list = auto()
@@ -55,19 +56,23 @@ class FieldMetadata:
                  size: int = 1,
                  count: int = 1,
                  data_size: int = 0,
-                 encoding: str = "utf-8",
-                 char_width: int = 1,
-                 null_term: bytes = b'\x00',
-                 byte_order: str | None = None):
+                 byte_order: str | None = None,
+                 encoding: str = "utf-8"
+                 ):
         self.field_type = FieldType[field_type]
         self.pos = pos
         self.size = size
         self.count = count
         self.data_size = data_size
-        self.encoding = encoding
-        self.null_term = null_term
-        self.char_width = char_width
         self.byte_order = byte_order
+        self.encoding = encoding
+
+        if encoding == 'shift-jis':
+            self.char_width = 2
+            self.null_term = '\x00\x00'
+        else:
+            self.char_width = 1
+            self.null_term = '\x00'
 
 
     def get_field_string(self) -> str:
@@ -117,7 +122,7 @@ class FieldMetadata:
         }
 
         return func_dict.get(self.field_type, lambda x: x)
-    
+
 
     def get_byte_size_single(self) -> int:
         return calcsize(self.get_field_string())
@@ -337,7 +342,7 @@ class PataponDataClass:
                         return index_value
             return None
 
-        if tag.func != None:
+        if tag.func is not None:
             func: Callable[..., int]= tag.func
             params = tag.func_params or {}
             new_params = {}
@@ -536,8 +541,8 @@ class PataponStaticDataClass(PataponDataClass):
 class PataponDynamicDataClass(PataponDataClass):
     byte_order: str = "<"
     @classmethod
-    def from_bytes(cls, raw: bytes, *_, header: Union[PataponDataClass,None] = None) -> 'PataponDynamicDataClass':
-        field_class: type[PataponDataClass]
+    def from_bytes(cls, raw: bytes, *_, header: Union[PataponDataClass,None] = None, file_offset: int = 0) -> 'PataponDynamicDataClass':
+        
         new_value: PataponDataClass | Any
         new_inst: PataponDynamicDataClass = cls()
 
@@ -550,45 +555,39 @@ class PataponDynamicDataClass(PataponDataClass):
             field_type: FieldType = metadata.field_type
             data_size: int = metadata.data_size
 
-            if field_type == FieldType.header:
-                field_class = field.type
-                if data_size != 0:
-                    # static header
-                    raw_header = raw[:data_size]
-                    new_value = field_class.from_bytes(raw_header)
-                else:
-                    # dynamic header
-                    new_value = field_class.from_bytes(raw)
-                    data_size = new_value.get_byte_size()
-            elif field_type == FieldType.body:
-                field_class = field.type
-                body_tag: FieldTag | None = cls.get_tag_by_type(FieldTagType.body, field_name=name)
-                
-                # find the matching header class for body
-                if body_tag is not None:
-                    headers = cls.get_field_name_by_tag_name(body_tag.name, field_type_search=FieldType.header, tag_type_search=FieldTagType.header)
-                    new_header_name = headers[0] if len(headers) > 0 else None
-                else:
-                    new_header_name = None
+            # get the size of the data field
+            size_tag = new_inst.get_tag_by_type(FieldTagType.size, field_name=name)
+            if size_tag is not None:
+                size = cls.eval_tag(new_inst, header, size_tag)
+            else:
+                size = metadata.size
 
-                if new_header_name is not None:
-                    new_header = getattr(new_inst, new_header_name)
-                else:
-                    new_header = None
+            # get the count of the data field
+            count_tag = new_inst.get_tag_by_type(FieldTagType.count, field_name=name)
+            if count_tag is not None:
+                count = cls.eval_tag(new_inst, header, count_tag)
+            else:
+                count = metadata.count
 
-                if data_size != 0:
-                    # static body
-                    raw_body = raw[:data_size]
-                    new_value = field_class.from_bytes(raw_body, header=new_header)
+            if field_type == FieldType.dataclass:
+                field_class: type[PataponDataClass]
+                if get_origin(field.type) == list:
+                    field_class = get_args(field.type)[0]
                 else:
-                    # dynamic body
-                    new_value = field_class.from_bytes(raw, header=new_header)
-                    data_size = new_value.get_byte_size()
-            elif field_type == FieldType.element_list:
-                field_class = get_args(field.type)[0]
+                    field_class = field.type
                 
                 byte_size_tag = new_inst.get_tag_by_type(FieldTagType.byte_size, field_name=name)
-                if byte_size_tag is not None:
+
+                if count > 1 or get_origin(field.type) == list:
+                    new_value = []
+                    offset = 0
+                    for _ in range(count):
+                        new_element = field_class.from_bytes(raw[offset:], header=header)
+                        new_element.offset = offset
+                        new_value.append(new_element)
+                        offset += new_element.get_byte_size()
+                    data_size = offset
+                elif byte_size_tag is not None:
                     byte_size = cls.eval_tag(new_inst, header, byte_size_tag)
 
                     new_value = []
@@ -598,39 +597,22 @@ class PataponDynamicDataClass(PataponDataClass):
                         new_element.offset = offset
                         new_value.append(new_element)
                         offset += new_element.get_byte_size()
+                    data_size = offset
                 else:
-                    count_tag = new_inst.get_tag_by_type(FieldTagType.count, field_name=name)
-                    if count_tag is not None:
-                        count = cls.eval_tag(new_inst, header, count_tag)
-                    else:
-                        count = metadata.count
+                    # find the matching header class for body, if applicable
+                    body_tag: FieldTag | None = cls.get_tag_by_type(FieldTagType.body, field_name=name)
+                    new_header = None
+                    if body_tag is not None:
+                        headers = cls.get_field_name_by_tag_name(body_tag.name, field_type_search=FieldType.dataclass, tag_type_search=FieldTagType.header)
+                        if len(headers) > 0:
+                            new_header = getattr(new_inst, headers[0])
                     
-                    new_value = []
-                    offset = 0
-                    for _ in range(count):
-                        new_element = field_class.from_bytes(raw[offset:], header=header)
-                        new_element.offset = offset
-                        new_value.append(new_element)
-                        offset += new_element.get_byte_size()
-                data_size = offset
+                    new_value = field_class.from_bytes(raw, header=new_header)
+                    data_size = new_value.get_byte_size()
             else:
                 # primary types
                 size: int
                 count: int
-
-                # get the size of the data field
-                size_tag = new_inst.get_tag_by_type(FieldTagType.size, field_name=name)
-                if size_tag is not None:
-                    size = cls.eval_tag(new_inst, header, size_tag)
-                else:
-                    size = metadata.size
-
-                # get the count of the data field
-                count_tag = new_inst.get_tag_by_type(FieldTagType.count, field_name=name)
-                if count_tag is not None:
-                    count = cls.eval_tag(new_inst, header, count_tag)
-                else:
-                    count = metadata.count
 
                 # byte size and byte count are only really used in special cases
                 # where the size or count given by another field is the byte size

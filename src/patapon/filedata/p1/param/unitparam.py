@@ -44,7 +44,7 @@ class BaseParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("u_base_param_count", "count")]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("u_base_param_count", "count")]})
 
 
 
@@ -66,12 +66,12 @@ class TroopTypeParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class TroopTypeParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[TroopTypeParamElement] = field(default_factory=list[TroopTypeParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("u_troop_type_param_count", "count")]})
+    param_list: list[TroopTypeParamElement] = field(default_factory=list[TroopTypeParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("u_troop_type_param_count", "count")]})
 
 
 
 @dataclass
 class UnitParam(PataponDynamicDataClass):
-    header: UnitParamHeader = field(default_factory=UnitParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    troop_type_params: TroopTypeParam = field(default_factory=TroopTypeParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: UnitParamHeader = field(default_factory=UnitParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    troop_type_params: TroopTypeParam = field(default_factory=TroopTypeParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

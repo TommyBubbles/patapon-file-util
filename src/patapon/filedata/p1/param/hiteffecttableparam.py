@@ -33,7 +33,7 @@ class BaseParamElement(PataponDynamicDataClass, PataponDataClassElement):
 
 @dataclass
 class BaseParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("het_base_param_count", "count")]})
+    param_list: list[BaseParamElement] = field(default_factory=list[BaseParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("het_base_param_count", "count")]})
 
 
 
@@ -47,12 +47,12 @@ class AttackMaterialTableElement(PataponDynamicDataClass, PataponDataClassElemen
 
 @dataclass
 class AttackMaterialTable(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AttackMaterialTableElement] = field(default_factory=list[AttackMaterialTableElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("het_attack_material_table_count", "count")]})
+    param_list: list[AttackMaterialTableElement] = field(default_factory=list[AttackMaterialTableElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("het_attack_material_table_count", "count")]})
 
 
 
 @dataclass
 class HitEffectTableParam(PataponDynamicDataClass):
-    header: HitEffectTableParamHeader = field(default_factory=HitEffectTableParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    attack_material_table: AttackMaterialTable = field(default_factory=AttackMaterialTable, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: HitEffectTableParamHeader = field(default_factory=HitEffectTableParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    base_params: BaseParam = field(default_factory=BaseParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    attack_material_table: AttackMaterialTable = field(default_factory=AttackMaterialTable, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

@@ -39,23 +39,23 @@ class NodeName(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class Unit1NodeNameParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[NodeName] = field(default_factory=list[NodeName], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("nn_unit_1_param_count", "count")]})
+    param_list: list[NodeName] = field(default_factory=list[NodeName], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("nn_unit_1_param_count", "count")]})
 
 
 @dataclass
 class Unit2NodeNameParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[NodeName] = field(default_factory=list[NodeName], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("nn_unit_2_param_count", "count")]})
+    param_list: list[NodeName] = field(default_factory=list[NodeName], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("nn_unit_2_param_count", "count")]})
 
 
 @dataclass
 class EquipNodeNameParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[NodeName] = field(default_factory=list[NodeName], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("nn_equip_param_count", "count")]})
+    param_list: list[NodeName] = field(default_factory=list[NodeName], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("nn_equip_param_count", "count")]})
 
 
 
 @dataclass
 class NodeNameParam(PataponDynamicDataClass):
-    header: NodeNameParamHeader = field(default_factory=NodeNameParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    unit_1_params: Unit1NodeNameParam = field(default_factory=Unit1NodeNameParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    unit_2_params: Unit2NodeNameParam = field(default_factory=Unit2NodeNameParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
-    equip_params: EquipNodeNameParam = field(default_factory=EquipNodeNameParam, metadata={"meta": FieldMetadata("body", 3), "tags": [FieldTag("file", "body")]})
+    header: NodeNameParamHeader = field(default_factory=NodeNameParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    unit_1_params: Unit1NodeNameParam = field(default_factory=Unit1NodeNameParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    unit_2_params: Unit2NodeNameParam = field(default_factory=Unit2NodeNameParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})
+    equip_params: EquipNodeNameParam = field(default_factory=EquipNodeNameParam, metadata={"meta": FieldMetadata("dataclass", 3), "tags": [FieldTag("file", "body")]})

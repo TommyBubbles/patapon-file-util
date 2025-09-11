@@ -42,7 +42,7 @@ class TroopAddingParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class TroopAddingParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[TroopAddingParamElement] = field(default_factory=list[TroopAddingParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("troop_adding_param_count", "count")]})
+    param_list: list[TroopAddingParamElement] = field(default_factory=list[TroopAddingParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("troop_adding_param_count", "count")]})
 
 
 
@@ -73,12 +73,12 @@ class SquadAddingParamElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class SquadAddingParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[SquadAddingParamElement] = field(default_factory=list[SquadAddingParamElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("squad_adding_param_count", "count")]})
+    param_list: list[SquadAddingParamElement] = field(default_factory=list[SquadAddingParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("squad_adding_param_count", "count")]})
 
 
 
 @dataclass
 class UnitLayoutParamE(PataponDynamicDataClass):
-    header: UnitLayoutParamEHeader = field(default_factory=UnitLayoutParamEHeader, metadata={"meta": FieldMetadata("header", 0, data_size=0x40), "tags": [FieldTag("file", "header")]})
-    troop_adding_params: TroopAddingParam = field(default_factory=TroopAddingParam, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
-    squad_adding_params: SquadAddingParam = field(default_factory=SquadAddingParam, metadata={"meta": FieldMetadata("body", 2), "tags": [FieldTag("file", "body")]})
+    header: UnitLayoutParamEHeader = field(default_factory=UnitLayoutParamEHeader, metadata={"meta": FieldMetadata("dataclass", 0, data_size=0x40), "tags": [FieldTag("file", "header")]})
+    troop_adding_params: TroopAddingParam = field(default_factory=TroopAddingParam, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
+    squad_adding_params: SquadAddingParam = field(default_factory=SquadAddingParam, metadata={"meta": FieldMetadata("dataclass", 2), "tags": [FieldTag("file", "body")]})

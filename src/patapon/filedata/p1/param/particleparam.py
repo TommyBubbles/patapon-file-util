@@ -29,11 +29,11 @@ class ParticleParamInfoElement(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class ParticleParamInfo(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[ParticleParamInfoElement] = field(default_factory=list[ParticleParamInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("particle_param_count", "count")]})
+    param_list: list[ParticleParamInfoElement] = field(default_factory=list[ParticleParamInfoElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("particle_param_count", "count")]})
 
 
 
 @dataclass
 class ParticleParam(PataponDynamicDataClass):
-    header: ParticleParamHeader = field(default_factory=ParticleParamHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    particle_params: ParticleParamInfo = field(default_factory=ParticleParamInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: ParticleParamHeader = field(default_factory=ParticleParamHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    particle_params: ParticleParamInfo = field(default_factory=ParticleParamInfo, metadata={"meta": FieldMetadata("dataclass", 1), "tags": [FieldTag("file", "body")]})
