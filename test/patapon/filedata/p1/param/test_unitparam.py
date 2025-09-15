@@ -96,6 +96,8 @@ def test_from_bytes(
         actual: UnitParam = UnitParam.from_bytes(raw)
         assert UnitParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x1C0
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == unit_param_header
 

@@ -89,6 +89,8 @@ class Test_SystemDataMissionParam:
             actual: SystemDataMissionParam = SystemDataMissionParam.from_bytes(raw)
             assert SystemDataMissionParam.verify_filler(actual)
 
+        assert actual.get_byte_size() == 0x13B40
+
         assert actual.header.get_byte_size() == 0x40
         assert actual.header == mission_param_header
 

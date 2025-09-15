@@ -61,6 +61,8 @@ def test_from_bytes(
         actual: CharaGroupParam = CharaGroupParam.from_bytes(raw)
         assert CharaGroupParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x640
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == chara_group_param_header
 

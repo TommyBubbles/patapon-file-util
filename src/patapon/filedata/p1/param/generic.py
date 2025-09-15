@@ -14,6 +14,8 @@ def align_header(partition_count: int, alignment: int):
     base_header_size = 0x20
     partition_info_size = 0x8 * partition_count
     total_size = base_header_size + partition_info_size
+    if total_size % alignment == 0:
+        return 0
     return alignment - (total_size % alignment)
 
 
@@ -25,7 +27,7 @@ class GenericParamHeaderPartitionInfo(PataponStaticDataClass, PataponDataClassEl
 
 @dataclass
 class GenericParamHeader(PataponDynamicDataClass, PataponDataClassHeader):
-    magic: str = field(default="YGF_GFP\x00", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
+    magic: str = field(default="YGF_GFP", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
     alignment: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1), "tags": [FieldTag("alignment", "source")]})
     version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
     partition_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3), "tags": [FieldTag("partition_count", "source")]})
@@ -33,8 +35,10 @@ class GenericParamHeader(PataponDynamicDataClass, PataponDataClassHeader):
     partition_info_list: list[GenericParamHeaderPartitionInfo] = field(default_factory=list[GenericParamHeaderPartitionInfo], metadata={"meta": FieldMetadata("dataclass", 5), "tags": [FieldTag("partition_count", "count")]})
     padding: bytes = field(default=b'', metadata={"meta": FieldMetadata("padding", 6), "tags": [FieldTag("padding", "size", func=align_header, func_params={"partition_count": "partition_count", "alignment": "alignment"})]})
 
+
     @classmethod
     def add_tags(cls): ...
+
 
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)

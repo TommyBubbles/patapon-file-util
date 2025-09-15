@@ -78,6 +78,8 @@ def test_from_bytes(
         actual: HitEffectTableParam = HitEffectTableParam.from_bytes(raw)
         assert HitEffectTableParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0xD00
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == hit_effect_table_param_header
 

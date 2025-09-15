@@ -92,6 +92,8 @@ def test_from_bytes(
         actual: SoundParam = SoundParam.from_bytes(raw)
         assert SoundParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x1480
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == sound_param_header
 

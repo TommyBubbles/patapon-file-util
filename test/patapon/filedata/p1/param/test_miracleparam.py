@@ -58,6 +58,8 @@ def test_from_bytes(
         actual: MiracleParam = MiracleParam.from_bytes(raw)
         assert MiracleParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x160
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == miracle_param_header
 

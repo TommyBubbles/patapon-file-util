@@ -1,9 +1,18 @@
 # TODO:
-## - combine fieldmetadata types body, header, and element_list into one class type (including logic)
 ## - make the file header available to all classes within the main class
 ## - combine PataponStaticDataClass and PataponDynamicDataClass into one class (PataponDataClass)
 ##   * from_bytes
-## - implement the to_bytes logic for dynamic data and format_string (potentially factor out instead)
+##   * implement the to_bytes logic for dynamic data and format_string (potentially factor out instead)
+## - speed up files processing
+##   * use a file instead of raw bytes to help with read speed (mmap, fileinput, open)
+##   * use multiprocessing for lists of PataponDataClasses
+## - implement reading zip files and bnd files
+##   * bnd partitioning logic is still needed
+##     x mostly done, still need to work on different file type processing
+
+# Notes:
+## - CharaBirthParam does not capture all of the AdjustDamageParams due to the count for it
+##   being off (by 4) in the original file. original count: 0x5D, actual count: 0x61
 
 
 # patapon-file-util

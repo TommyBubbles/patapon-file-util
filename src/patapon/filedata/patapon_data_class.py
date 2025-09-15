@@ -1,4 +1,4 @@
-from struct import pack, unpack, calcsize
+from struct import pack, unpack, calcsize, error
 from dataclasses import dataclass, Field, field
 from typing import Any, Callable, Union, get_origin, get_args
 from enum import Enum, auto
@@ -16,9 +16,7 @@ class FieldType(Enum):
     unsigned_int8 = auto()
     float = auto()
     dataclass = auto()
-    header = auto()
-    body = auto()
-    element_list = auto()
+    bnd_files = auto()
 
 
 class FieldTagType(Enum):
@@ -29,6 +27,8 @@ class FieldTagType(Enum):
     byte_count = auto()
     header = auto()
     body = auto()
+    list = auto()
+    linked_list = auto()
 
 
 class FieldTag:
@@ -69,10 +69,10 @@ class FieldMetadata:
 
         if encoding == 'shift-jis':
             self.char_width = 2
-            self.null_term = '\x00\x00'
+            self.null_term = b'\x00\x00'
         else:
             self.char_width = 1
-            self.null_term = '\x00'
+            self.null_term = b'\x00'
 
 
     def get_field_string(self) -> str:
@@ -203,22 +203,25 @@ class PataponDataClassElement:
 class PataponDataClass:
     @classmethod
     def from_bytes(cls, raw: bytes, *, header: 'PataponDataClass | None' = ...) -> 'PataponDataClass': ...
-    def to_bytes(self) -> bytes: ...
     @classmethod
     def format_string(cls) -> str: ...
+    def to_bytes(self) -> bytes: ...
+    def process(self, raw: bytes) -> tuple[int,Any]: ...
 
 
     def __init__(self):
         pass
 
 
-    def get_byte_size(self) -> int:
+    def get_byte_size(self, start: int = 0, end: int = -1) -> int:
         cls = self.__class__
         size = 0
         for name, field in cls.__dataclass_fields__.items():
-            value = getattr(self, name)
-            metadata: FieldMetadata = field.metadata['meta']            
+            metadata: FieldMetadata = field.metadata['meta']
+            if metadata.pos < start or (end != -1 and metadata.pos >= end):
+                continue
 
+            value = getattr(self, name)
             if isinstance(value, PataponDataClass):
                 size += value.get_byte_size()
             elif isinstance(value, (int, float)):
@@ -333,7 +336,8 @@ class PataponDataClass:
                         list_pos = source_tag.pos
                         sub_tag = source_tag.sub_tag
                     else:
-                        raise LookupError(f"Unable to find tag information for {tag.name}: pos and sub_tag")
+                        return obj_field_value
+                        # raise LookupError(f"Unable to find tag information for {tag.name}: pos and sub_tag")
                     
                     index_value = obj_field_value[list_pos]
                     if isinstance(index_value, PataponDataClass):
@@ -348,13 +352,17 @@ class PataponDataClass:
             new_params = {}
             for param_name, tag_name in params.items():
                 new_param_value = None
+                if tag_name == 'self':
+                    new_param_value = new_inst
+
                 # check new instance for tag first
-                new_param_value = get_tag_value(cls, new_inst, tag_name)
+                if new_param_value is None:
+                    new_param_value = get_tag_value(cls, new_inst, tag_name)
 
                 # check header for tag second
                 if new_param_value is None and isinstance(header, PataponDataClass):
                     new_param_value = get_tag_value(header.__class__, header, tag_name)
-                
+
                 new_params[param_name] = new_param_value
             return func(**new_params)
         else: 
@@ -476,11 +484,18 @@ class PataponStaticDataClass(PataponDataClass):
         format_string = cls.format_string()
 
         # base case for empty header/body
-        size = calcsize(format_string)
-        if size == 0:
-            return new_inst
+        try:
+            size = calcsize(format_string)
+        except error:
+            raise error(f"class: {cls.__name__}, format_string: {format_string}")
+        try:
+            if size == 0:
+                return new_inst
+            raw_values = unpack(format_string, raw[:size])
+        except error:
+            raise error(f"class: {cls.__name__}, format_string: {format_string}, raw: {raw[:size]}, raw size: {len(raw)}")
 
-        raw_values = unpack(format_string, raw[:size])
+
         index = 0
         for name, field in cls._ordered_dataclass_fields():
             metadata: FieldMetadata = field.metadata["meta"]
@@ -542,7 +557,6 @@ class PataponDynamicDataClass(PataponDataClass):
     byte_order: str = "<"
     @classmethod
     def from_bytes(cls, raw: bytes, *_, header: Union[PataponDataClass,None] = None, file_offset: int = 0) -> 'PataponDynamicDataClass':
-        
         new_value: PataponDataClass | Any
         new_inst: PataponDynamicDataClass = cls()
 
@@ -569,35 +583,56 @@ class PataponDynamicDataClass(PataponDataClass):
             else:
                 count = metadata.count
 
-            if field_type == FieldType.dataclass:
+            if field_type == FieldType.bnd_files:
+                data_size, new_value = new_inst.process(raw)
+                pass
+            elif field_type == FieldType.dataclass:
                 field_class: type[PataponDataClass]
                 if get_origin(field.type) == list:
                     field_class = get_args(field.type)[0]
                 else:
                     field_class = field.type
                 
-                byte_size_tag = new_inst.get_tag_by_type(FieldTagType.byte_size, field_name=name)
+                if get_origin(field.type) == list:
+                    byte_size_tag = new_inst.get_tag_by_type(FieldTagType.byte_size, field_name=name)
+                    linked_list_tag = new_inst.get_tag_by_type(FieldTagType.linked_list, field_name=name)
 
-                if count > 1 or get_origin(field.type) == list:
-                    new_value = []
-                    offset = 0
-                    for _ in range(count):
-                        new_element = field_class.from_bytes(raw[offset:], header=header)
-                        new_element.offset = offset
-                        new_value.append(new_element)
-                        offset += new_element.get_byte_size()
-                    data_size = offset
-                elif byte_size_tag is not None:
-                    byte_size = cls.eval_tag(new_inst, header, byte_size_tag)
+                    if byte_size_tag is not None:
+                        byte_size = cls.eval_tag(new_inst, header, byte_size_tag)
 
-                    new_value = []
-                    offset = 0
-                    while offset < byte_size:
-                        new_element: Union[PataponDataClass,PataponDataClassElement] = field_class.from_bytes(raw[offset:], header=header)
-                        new_element.offset = offset
-                        new_value.append(new_element)
-                        offset += new_element.get_byte_size()
-                    data_size = offset
+                        new_value = []
+                        offset = 0
+                        while offset < byte_size:
+                            new_element: Union[PataponDataClass,PataponDataClassElement] = field_class.from_bytes(raw[offset:], header=header)
+                            new_element.offset = offset
+                            new_value.append(new_element)
+                            offset += new_element.get_byte_size()
+                        data_size = offset
+                    elif linked_list_tag is not None:
+                        # linked list
+                        new_value = []
+                        offset = 0
+                        index = 0
+                        new_element = cls()
+                        while True:
+                            if not cls.eval_tag(new_inst, new_element, linked_list_tag):
+                                break
+                            new_element: PataponDataClass = field_class.from_bytes(raw[offset:])
+                            new_element.offset = offset
+                            new_value.append(new_element)
+                            offset += new_element.get_byte_size()
+                            index += 1
+                            
+                        data_size = offset
+                    else:
+                        new_value = []
+                        offset = 0
+                        for _ in range(count):
+                            new_element = field_class.from_bytes(raw[offset:], header=header)
+                            new_element.offset = offset
+                            new_value.append(new_element)
+                            offset += new_element.get_byte_size()
+                        data_size = offset
                 else:
                     # find the matching header class for body, if applicable
                     body_tag: FieldTag | None = cls.get_tag_by_type(FieldTagType.body, field_name=name)
@@ -613,6 +648,7 @@ class PataponDynamicDataClass(PataponDataClass):
                 # primary types
                 size: int
                 count: int
+                field_format_string = ""
 
                 # byte size and byte count are only really used in special cases
                 # where the size or count given by another field is the byte size
@@ -634,33 +670,52 @@ class PataponDynamicDataClass(PataponDataClass):
                 # if not, we must try to find the correct size to extract from the
                 # bytes by using a null terminator
                 if metadata.field_type == FieldType.string and size == 1:
+                    size_array = []
+                    
                     null_term = metadata.null_term
                     end = 0
-                    while end < len(raw) and null_term != raw[end:end+metadata.char_width]:
-                        end=end+metadata.char_width
-                    size = min(end+metadata.char_width, len(raw))
+                    prev_end = 0
+                    for _ in range(count):
+                        while end < len(raw) and null_term != raw[end:end+metadata.char_width]:
+                            end=end+metadata.char_width
+                        size_array.append(min(end+metadata.char_width-prev_end, len(raw)))
+                        end = end+metadata.char_width
+                        prev_end = end
+                    field_format_string = "".join(f"{s}{metadata.get_field_string()}" for s in size_array)
+                    
 
+                # in the case of bytes, we have to check if a size of -1 was given
+                # if so, read in the rest of the data stream as bytes
+                if metadata.field_type == FieldType.bytes and size == -1:
+                    size = len(raw)
 
                 # construct the format string to be used with unpack function
-                field_format_string = f"{size}{metadata.get_field_string()}" * count
+                if field_format_string == "":
+                    field_format_string = f"{size}{metadata.get_field_string()}" * count
                 field_byte_order = metadata.byte_order or cls.byte_order
 
                 # extract the value from raw bytes
                 field_format_string = field_byte_order + field_format_string
-                data_size = calcsize(field_format_string)
-                new_values = unpack(field_format_string, raw[:data_size])
+                try:
+                    data_size = calcsize(field_format_string)
+                    if data_size == 0:
+                        continue
+                    new_values = unpack(field_format_string, raw[:data_size])
+                except error as err:
+                    raise error(f"{name}: {field_format_string}")
 
                 # process the raw values into correct data types
                 try:
                     func: Callable = metadata.get_from_bytes_func()
-                    if count > 1:
+                    if count > 1 or get_origin(field.default_factory) == list:
                         new_value = list(func(val) for val in new_values)
                     elif len(new_values) == 0:
                         new_value = b'\x00' * size
                     else:
                         new_value = func(new_values[0])
                 except UnicodeDecodeError as err:
-                    raise TypeError(f"Error with field: {name}: {err.reason} {err.object}")
+                    raise TypeError(f"Error with field: {name}: {err.reason}")
+                    # raise TypeError(f"Error with field: {name}: {err.reason} {err.object}")
 
             # set the new value and remove processed value from the raw bytes
             setattr(new_inst, name, new_value)

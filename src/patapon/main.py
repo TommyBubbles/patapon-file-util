@@ -44,27 +44,84 @@ sys.path.insert(0, ".\\src")
 #         output.write(new_file_contents)
 
 
-
-# from hashlib import sha1, md5
-
-
-# with open('D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\abnormalstatusparam.dat', 'rb') as file:
-#     raw = file.read()
-#     sha1_hash = sha1(raw)
-#     md5_hash = md5(raw)
-#     print(sha1_hash.hexdigest())
-#     print(md5_hash.hexdigest())
-#     print(hex(0x08584955))
-
-
-
 from patapon.filedata.p1.bnd import BND
 
+def print_files(bnd: BND, path: str = "/"):
+    file_info = bnd.header.get_ordered_linked_info('partition', 'dataOffset')
+    partitions = bnd.partitions
+    for i in range(bnd.header.nFiles):
+        filename = file_info[i][1].name
+        cur_partition = partitions[i]
 
-with open("D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\DATA_CMN.BND", "rb") as file:
+        print(path + filename)
+        if type(cur_partition) == BND:
+            print_files(cur_partition, path + filename + '/')
+
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\paramlist.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\localdata.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\collisionparamlist.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\model.amdl"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\s_a_actor.arc"
+filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\actorresourcenode.bnd"
+with open(filepath, "rb") as file:
     raw = file.read()
     test: BND = BND.from_bytes(raw)
     print(test.header)
-    print(len(test.partition_info.info_list))
-    for i in test.partition_info.info_list:
-        print(i)
+    print(f"header size: {hex(test.header.get_byte_size())}")
+    print_files(test)
+        
+from patapon.filedata.p1.gxx import Gxx
+
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\@model\\chr_dmy.gxx"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\nowloading.gxx"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tips_now.gxx"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tips_push.gxx"
+# with open(filepath, 'rb') as file:
+#     offset = 0
+#     raw = file.read()
+#     test: Gxx = Gxx.from_bytes(raw)
+#     print(test.header)
+#     offset += test.header.get_byte_size()
+    
+#     print(f"\nVertex Offset: {hex(offset)}\n")
+#     for i in test.vertex_section.vertex_info:
+#         print(i)
+#         offset += i.get_byte_size()
+
+#     print(f"\nMotion Command Offset: {hex(offset)}\n")
+#     for i in test.motion_commands_section.command_sections:
+#         print(i)
+#         offset += i.get_byte_size()
+
+#     print(f"\nMesh Header Offset: {hex(offset)}\n")
+#     print(test.mesh_section.mesh_header)
+#     offset += test.mesh_section.mesh_header.get_byte_size()
+    
+#     print(f"\nMesh Texture Pointers Offset: {hex(offset)}\n")
+#     print(test.mesh_section.texture_pointers)
+#     offset += test.mesh_section.texture_pointers.get_byte_size()
+
+#     print(f"\nMotion Info Table Offset: {hex(offset)}\n")
+#     print(test.mesh_section.motion_info_table)
+#     offset += test.mesh_section.motion_info_table.get_byte_size()
+
+#     print(f"\nBone Names Offset: {hex(offset)}\n")
+#     print(test.mesh_section.bone_names)
+#     offset += test.mesh_section.bone_names.get_byte_size()
+
+#     print(f"\nTexture Info Offset: {hex(offset)}\n")
+#     print(test.mesh_section.texture_list)
+#     offset += test.mesh_section.texture_list.get_byte_size()
+
+#     print(f"\nPadding Offset: {hex(offset)}\n")
+#     print(test.mesh_section.padding)
+#     offset += len(test.mesh_section.padding)
+
+#     print(f"\nFile Size: {hex(offset)}\n")
+
+
+# import gzip
+
+# with gzip.open('D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\basesdata.bnd', 'rb') as file:
+#     file_contents = file.read(0x25a7d8)
+#     print(file_contents[:0x4])

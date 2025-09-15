@@ -64,6 +64,8 @@ def test_from_bytes(
         actual: InstructionCommandParam = InstructionCommandParam.from_bytes(raw)
         assert InstructionCommandParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0xE40
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == instruction_command_param_header
 

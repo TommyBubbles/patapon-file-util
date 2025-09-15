@@ -117,6 +117,8 @@ def test_from_bytes(
         actual: EffectParam = EffectParam.from_bytes(raw)
         assert EffectParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0xB3E8
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == effect_param_header
 

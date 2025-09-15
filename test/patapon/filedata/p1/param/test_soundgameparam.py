@@ -59,6 +59,8 @@ def test_from_bytes(
         actual: SoundGameParam = SoundGameParam.from_bytes(raw)
         assert SoundGameParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x298
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == sound_game_param_header
 

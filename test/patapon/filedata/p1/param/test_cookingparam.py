@@ -82,6 +82,8 @@ def test_from_bytes(
         actual: CookingParam = CookingParam.from_bytes(raw)
         assert CookingParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x4E0
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == cooking_param_header
 

@@ -1,75 +1,170 @@
-from dataclasses import dataclass, field 
+from dataclasses import dataclass, field
+from zlib import crc32
+from typing import Literal
 from patapon.filedata.patapon_data_class import (
+    PataponDataClass,
     PataponStaticDataClass,
     PataponDynamicDataClass,
-    PataponDataClassBody,
     PataponDataClassHeader,
     PataponDataClassElement,
     FieldMetadata,
     FieldTag
 )
+import patapon.filedata.p1.param as param
+from .unknown import UnknownDataClass
+from .param.generic import GenericParamHeader
+from .gxx import GxxHeader, Gxx
 
-
-@dataclass
-class BNDHeader(PataponDynamicDataClass, PataponDataClassHeader):
-    magic: str = field(default="BND", metadata={"meta": FieldMetadata("string", 0, size=0x4)})
-    flag: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
-    alignSize: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2)})
-    partitionInfoOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    nameInfoOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 4), "tags": [FieldTag("nameInfoOffset", "source")]})
-    dataTableOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("dataTableOffset", "source")]})
-    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 6, count=2)})
-    nFiles: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7)})
-    nPartitionInfo: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8), "tags": [FieldTag("partition_info_count", "source")]})
-    
 
 
 @dataclass
-class PartitionInfoElement(PataponStaticDataClass, PataponDataClassElement):
+class PartitionInfo(PataponStaticDataClass, PataponDataClassElement):
     hash: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 0)})
     nameOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
     dataOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2)})
     dataSize: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3), "tags": [FieldTag("partition_size", "source")]})
 
 
-@dataclass
-class PartitionInfo(PataponDynamicDataClass, PataponDataClassBody):
-    info_list: list[PartitionInfoElement] = field(default_factory=list[PartitionInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("partition_info_count", "count")]})
-
-
-    def get_ordered_list(self, attr_name: str) -> list[PartitionInfoElement]:
-        if attr_name in PartitionInfoElement.__dataclass_fields__.keys():
-            return sorted(self.info_list, key=lambda x: getattr(x, attr_name))
-        raise LookupError(f"Unable to find attribute {attr_name} in PartitionInfoElement")
-
+def get_filename_size(element_size: int) -> int:
+    if element_size == -1:
+        return 1
+    return element_size - 7
 
 
 @dataclass
-class NameInfoElement(PataponDynamicDataClass, PataponDataClassElement):
+class NameInfo(PataponDynamicDataClass, PataponDataClassElement):
     nestLevel: int = field(default=0, metadata={"meta": FieldMetadata("signed_int8", 0)})
     prevOffset: int = field(default=0, metadata={"meta": FieldMetadata("signed_int8", 1)})
-    nextOffset: int = field(default=0, metadata={"meta": FieldMetadata("signed_int8", 2)})
+    nextOffset: int = field(default=0, metadata={"meta": FieldMetadata("signed_int8", 2), "tags": [FieldTag("element_size", "source"), FieldTag("next_name_info_element", "source")]})
     partitionOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
-    name: str = field(default="", metadata={"meta": FieldMetadata("string", 4, null_term=b'\x00')})
+    name: str = field(default="", metadata={"meta": FieldMetadata("string", 4), "tags": [FieldTag("filename_size", "size", func=get_filename_size, func_params={"element_size": "element_size"})]})
 
 
-def data_size_from_offsets(start: int, end: int) -> int:
-    return start - end
+    def calc_hash(self):
+        striped_name = self.name.strip('\x00')
+        return crc32(striped_name.encode())
+
+
+def has_next_element(next: int, file_count: int) -> bool:
+    return next != -1 and file_count > 0
+
+
+def align_header(alignment: int, obj: PataponDataClass):
+    return alignment - (obj.get_byte_size(0, 11) % alignment)
 
 
 @dataclass
-class NameInfo(PataponDynamicDataClass, PataponDataClassBody):
-    info_list: list[NameInfoElement] = field(default_factory=list[NameInfoElement], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("info_list_size", "size", func=data_size_from_offsets, func_params={"start": "nameInfoOffset", "end": "dataTableOffset"})]})
+class BNDHeader(PataponDynamicDataClass, PataponDataClassHeader):
+    magic: str = field(default="BND", metadata={"meta": FieldMetadata("string", 0, size=0x4)})
+    flag: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
+    alignSize: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2), "tags": [FieldTag("alignment", "source")]})
+    partitionInfoOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
+    nameInfoOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 4), "tags": [FieldTag("nameInfoOffset", "source")]})
+    dataTableOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 5), "tags": [FieldTag("dataTableOffset", "source")]})
+    filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 6, count=2)})
+    nFiles: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 7), "tags": [FieldTag("file_count", "source")]})
+    nPartitionInfo: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 8), "tags": [FieldTag("partition_info_count", "source")]})
+    partition_info: list[PartitionInfo] = field(default_factory=list[PartitionInfo], metadata={"meta": FieldMetadata("dataclass", 9), "tags": [FieldTag("partition_info_count", "count")]})
+    name_info: list[NameInfo] = field(default_factory=list[NameInfo], metadata={"meta": FieldMetadata("dataclass", 10), "tags": [FieldTag("next_element", "linked_list", func=has_next_element, func_params={"next": "next_name_info_element", "file_count": "file_count"}), FieldTag("name_info", "source")]})
+    padding: bytes = field(default=b'', metadata={"meta": FieldMetadata("padding", 11), "tags": [FieldTag("padding", "size", func=align_header, func_params={"alignment": "alignment", "obj": "self"})]})
 
 
+    def get_ordered_partition_info(self, order_name: str, filter_name: str | None = None) -> list[PartitionInfo]:
+        if order_name in PartitionInfo.__dataclass_fields__.keys():
+            if filter_name is not None and filter_name in PartitionInfo.__dataclass_fields__.keys():
+                filtered_info_list = filter(lambda x: getattr(x, filter_name) != 0, self.partition_info)
+                ordered_info_list = sorted(filtered_info_list, key=lambda x: getattr(x, order_name))
+            else:
+                ordered_info_list = sorted(self.partition_info, key=lambda x: getattr(x, order_name))
 
-@dataclass
-class Partitions(PataponDynamicDataClass, PataponDataClassBody):
-    partition_list: list[bytes] = field(default_factory=list[bytes], metadata={"meta": FieldMetadata("element_list", 0), "tags": [FieldTag("dataSize", "size")]})
+            return ordered_info_list
+        raise LookupError(f"Unable to find attribute {order_name} in PartitionInfo")
+    
+
+    def get_ordered_name_info(self, order_name: str, filter_name: str = "") -> list[NameInfo]:
+        if order_name in NameInfo.__dataclass_fields__.keys():
+            if filter_name in NameInfo.__dataclass_fields__.keys():
+                filtered_info_list = filter(lambda x: getattr(x, filter_name) != 0, self.name_info)
+                ordered_info_list = sorted(filtered_info_list, key=lambda x: getattr(x, order_name))
+            else:
+                ordered_info_list = sorted(self.name_info, key=lambda x: getattr(x, order_name))
+
+            return ordered_info_list
+        raise LookupError(f"Unable to find attribute {order_name} in NameInfo")
+    
+
+    def get_ordered_linked_info(self, list_order: Literal["partition","name"] = "partition", order_name: str = "") -> list[tuple[PartitionInfo,NameInfo]]:
+        linked_info: list[tuple[PartitionInfo,NameInfo]] = []
+        partition_info = self.get_ordered_partition_info('hash', 'dataSize')
+        name_info = self.get_ordered_name_info('partitionOffset')
+
+        for i in range(len(partition_info)):
+            linked_info.append((partition_info[i], name_info[i]))
+
+        if list_order == "partition" and order_name in PartitionInfo.__dataclass_fields__.keys():
+            ordered_linked_info = sorted(linked_info, key=lambda x: getattr(x[0], order_name))
+        elif list_order == "name" and order_name in NameInfo.__dataclass_fields__.keys():
+            ordered_linked_info = sorted(linked_info, key=lambda x: getattr(x[1], order_name))
+        else:
+            raise LookupError(f"Unable to find attribute {order_name} in either PartitionInfo or NameInfo")
+        return ordered_linked_info
 
 
 
 @dataclass
 class BND(PataponDynamicDataClass):
-    header: BNDHeader = field(default_factory=BNDHeader, metadata={"meta": FieldMetadata("header", 0), "tags": [FieldTag("file", "header")]})
-    partition_info: PartitionInfo = field(default_factory=PartitionInfo, metadata={"meta": FieldMetadata("body", 1), "tags": [FieldTag("file", "body")]})
+    header: BNDHeader = field(default_factory=BNDHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
+    partitions: list[PataponDataClass] = field(default_factory=list[PataponDataClass], metadata={"meta": FieldMetadata("bnd_files", 1), "tags": [FieldTag("file", "body")]})
+
+
+    def process(self, raw: bytes) -> tuple[int,list[PataponDataClass]]:
+        linked_info = self.header.get_ordered_linked_info('partition', 'dataOffset')
+
+        new_value: list[PataponDataClass] = []
+
+        offset = 0
+        for info in linked_info:
+            cls: type[PataponDataClass]
+
+            partition_info = info[0]
+            filename = info[1].name.strip("\x00")
+
+            # extract the magic bit from the file, if it exists
+            magic = ''
+            j = 0
+            next_char = raw[offset:offset+1]
+            while next_char != b'\x00' or j > 8:
+                try:
+                    magic += next_char.decode()
+                except UnicodeDecodeError:
+                    break
+                j += 1
+                next_char = raw[offset+j:offset+j+1]
+
+            param_magic = GenericParamHeader.__dataclass_fields__['magic'].default
+            gxx_magic = GxxHeader.__dataclass_fields__['magic'].default
+            bnd_magic = BNDHeader.__dataclass_fields__['magic'].default
+    
+            if magic.startswith(bnd_magic):
+                cls = BND
+            elif magic.startswith(gxx_magic):
+                cls = Gxx
+            else:
+                temp_cls, cls_type = param.get_dataclass_from_filename(filename)
+                if temp_cls is not None:
+                    if not magic == param_magic and cls_type == 0:
+                        cls = UnknownDataClass
+                    else:
+                        cls = temp_cls
+                else:
+                    cls = UnknownDataClass
+
+            size = partition_info.dataSize
+            new_value.append(cls.from_bytes(raw[offset:offset+size]))
+            
+            alignment = self.header.alignSize
+            offset += size
+            if offset % alignment != 0:
+                offset += alignment - (size % alignment)
+
+        return offset, new_value

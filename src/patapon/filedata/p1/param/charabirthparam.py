@@ -49,9 +49,13 @@ class AdjustDamageParamElement(PataponDynamicDataClass, PataponDataClassElement)
     damageParam: DamageParam = field(default_factory=DamageParam, metadata={"meta": FieldMetadata("dataclass", 1)})
 
 
+def adjust_damage_param_count_correction(count: int):
+    return count + 4
+    
+
 @dataclass
 class AdjustDamageParam(PataponDynamicDataClass, PataponDataClassBody):
-    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cb_adjust_damage_param_count", "count")]})
+    param_list: list[AdjustDamageParamElement] = field(default_factory=list[AdjustDamageParamElement], metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("cb_adjust_damage_param_count", "count", func=adjust_damage_param_count_correction, func_params={"count": "cb_adjust_damage_param_count"})]})
 
 
 

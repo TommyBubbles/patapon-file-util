@@ -73,6 +73,8 @@ def test_from_bytes(
         actual: SystemParam = SystemParam.from_bytes(raw)
         assert SystemParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x2C0
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == system_param_header
 

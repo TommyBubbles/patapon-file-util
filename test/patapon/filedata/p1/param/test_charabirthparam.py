@@ -48,7 +48,7 @@ def birth_param_last_element() -> BirthParamElement:
 @fixture
 def adjust_damage_param_last_element() -> AdjustDamageParamElement:
     return AdjustDamageParamElement(
-        b'\x83\x81\x83K\x83|\x83\x93\x95\xe2\x90\xb3\x82P\x82Q\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'.decode("shift-jis"),
+        b'\x83\x81\x83K\x83|\x83\x93\x95\xe2\x90\xb3\x82P\x82U\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'.decode("shift-jis"),
         DamageParam(
             0.0,
             0.0,
@@ -71,7 +71,7 @@ def adjust_damage_param_last_element() -> AdjustDamageParamElement:
             [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
-            [-1, -1, -1, -1, -1, -1, -1, -1]
+            [-1, -1, -1, -1, -1, -1, -1, -1],
         ),
     )
 
@@ -102,6 +102,8 @@ def test_from_bytes(
         actual: CharaBirthParam = CharaBirthParam.from_bytes(raw)
         assert CharaBirthParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0xAD60
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == chara_birth_param_header
 
@@ -109,6 +111,7 @@ def test_from_bytes(
     assert actual.birth_params.param_list[-1].get_byte_size() == 0x80
     assert actual.birth_params.param_list[-1] == birth_param_last_element
 
-    assert len(actual.adjust_damage_params.param_list) == 0x5D
+    # assert len(actual.adjust_damage_params.param_list) == 0x5D
+    assert len(actual.adjust_damage_params.param_list) == 0x61
     assert actual.adjust_damage_params.param_list[-1].get_byte_size() == 0x120
     assert actual.adjust_damage_params.param_list[-1] == adjust_damage_param_last_element

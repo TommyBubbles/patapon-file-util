@@ -141,6 +141,8 @@ def test_from_bytes(
         actual: CarnivalPowerEvalutateParamBases = CarnivalPowerEvalutateParamBases.from_bytes(raw)
         assert CarnivalPowerEvalutateParamBases.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x300
+
     assert actual.header.get_byte_size() == 0x80
     assert actual.header == carnival_power_evalutate_param_bases_header
 

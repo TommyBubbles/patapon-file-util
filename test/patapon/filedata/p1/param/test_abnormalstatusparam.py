@@ -81,6 +81,8 @@ def test_from_bytes(
         actual: AbnormalStatusParam = AbnormalStatusParam.from_bytes(raw)
         assert AbnormalStatusParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0x440
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == abnormal_status_param_header
 

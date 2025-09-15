@@ -56,6 +56,8 @@ def test_from_bytes(
         actual: GameParam = GameParam.from_bytes(raw)
         assert GameParam.verify_filler(actual)
 
+    assert actual.get_byte_size() == 0xC0
+
     assert actual.header.get_byte_size() == 0x40
     assert actual.header == game_param_header
 
