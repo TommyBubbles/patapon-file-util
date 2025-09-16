@@ -53,7 +53,7 @@ def print_files(bnd: BND, path: str = "/"):
         filename = file_info[i][1].name
         cur_partition = partitions[i]
 
-        print(path + filename)
+        print(f"{cur_partition.__class__.__name__:<32}", path + filename)
         if type(cur_partition) == BND:
             print_files(cur_partition, path + filename + '/')
 
@@ -62,7 +62,9 @@ def print_files(bnd: BND, path: str = "/"):
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\collisionparamlist.bnd"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\model.amdl"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\s_a_actor.arc"
-filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\actorresourcenode.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\actorresourcenode.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\layoutlist.layl"
+filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\modellist.bnd"
 with open(filepath, "rb") as file:
     raw = file.read()
     test: BND = BND.from_bytes(raw)

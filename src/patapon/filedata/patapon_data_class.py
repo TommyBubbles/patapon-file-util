@@ -227,7 +227,8 @@ class PataponDataClass:
             elif isinstance(value, (int, float)):
                 size += metadata.get_byte_size()
             elif isinstance(value, (bytes, str)):
-                size += max(metadata.get_byte_size(), metadata.get_byte_size_single() * len(value))
+                if len(value) != 0:
+                    size += max(metadata.get_byte_size(), metadata.get_byte_size_single() * len(value))
             elif isinstance(value, list):
                 if len(value) > 0:
                     if isinstance(value[0], (int, float)):
@@ -507,7 +508,7 @@ class PataponStaticDataClass(PataponDataClass):
                 else:
                     new_value = func(raw_values[index])
             except UnicodeDecodeError as err:
-                raise TypeError(f"Error with field: {name}: {err.reason} {err.object}")
+                raise TypeError(f"Error with field {cls.__name__}.{name}: {err.reason} {err.object}")
                 
             setattr(new_inst, name, new_value)
             index += count

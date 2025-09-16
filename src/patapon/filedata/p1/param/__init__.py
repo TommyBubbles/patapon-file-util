@@ -1,3 +1,5 @@
+import re
+
 from patapon.filedata.patapon_data_class import PataponDataClass
 
 from .damageparam import DamageParam
@@ -18,10 +20,12 @@ from .laboparam import LaboParam
 from .miracleparam import MiracleParam
 from .missionparam import SystemDataMissionParam
 from .particleparam import ParticleParam
+from .scenelayoutparam import SceneLayoutParam
 from .soundgameparam import SoundGameParam
 from .soundparam import SoundParam
 from .squadlineparam import SquadLineParam
 from .systemparam import SystemParam
+
 
 # basesdata
 from .charaparam import BasesDataCharaParam
@@ -45,8 +49,9 @@ from .nodenameparam import NodeName
 from .unitparam import UnitParam
 
 
+PataponDataClassDict = dict[str,type[PataponDataClass]]
 def get_dataclass_from_filename(name: str) -> tuple[type[PataponDataClass]|None,int]:
-    data_filename_mapping: dict[str,type[PataponDataClass]] = {
+    data_filename_mapping: PataponDataClassDict = {
         'abnormalstatusparam.dat': AbnormalStatusParam,
         'carnivalpowerevalutateparam.dat': CarnivalPowerEvalutateParam,
         'carnivalpowerevalutateparambases.dat': CarnivalPowerEvalutateParamBases,
@@ -60,7 +65,7 @@ def get_dataclass_from_filename(name: str) -> tuple[type[PataponDataClass]|None,
         'laboparam.dat': LaboParam,
         'miracleparam.dat': MiracleParam,
         'missionparam.dat': SystemDataMissionParam,
-        'particleparam.dat': ParticleParam ,
+        'particleparam.dat': ParticleParam,
         'soundgameparam.dat': SoundGameParam,
         'soundparam.dat': SoundParam,
         'squadlineparam.dat': SquadLineParam,
@@ -78,11 +83,15 @@ def get_dataclass_from_filename(name: str) -> tuple[type[PataponDataClass]|None,
         'unitlayoutparam_e.dat': UnitLayoutParamE,
     }
 
-    specific_folder_filename_mapping: dict[str,type[PataponDataClass]] = {
+    specific_folder_filename_mapping: PataponDataClassDict = {
         'charaparam.dat': CharaParam,
         'equipparam.dat': EquipParam,
         'missionparam.dat': MissionParam,
         'actorparam.dat': ActorParam
+    }
+
+    data_filename_pattern_mapping: PataponDataClassDict = {
+        r'scenelayoutparam[0-9]{2}.dat': SceneLayoutParam
     }
 
     cls = data_filename_mapping.get(name, None)
@@ -92,5 +101,11 @@ def get_dataclass_from_filename(name: str) -> tuple[type[PataponDataClass]|None,
     cls = specific_folder_filename_mapping.get(name, None)
     if cls is not None:
         return cls, 2
+
+    for pattern, dfp_cls in data_filename_pattern_mapping.items():
+        c = re.compile(pattern)
+        m = c.match(name)
+        if m is not None:
+            return dfp_cls, 3
 
     return cls, 0
