@@ -493,8 +493,8 @@ class PataponStaticDataClass(PataponDataClass):
             if size == 0:
                 return new_inst
             raw_values = unpack(format_string, raw[:size])
-        except error:
-            raise error(f"class: {cls.__name__}, format_string: {format_string}, raw: {raw[:size]}, raw size: {len(raw)}")
+        except error as err:
+            raise error(f"error msg: {err.args[0]}, class: {cls.__name__}, format_string: {format_string}, raw: {raw[:size]}, raw size: {len(raw)}")
 
 
         index = 0

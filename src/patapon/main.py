@@ -44,18 +44,39 @@ sys.path.insert(0, ".\\src")
 #         output.write(new_file_contents)
 
 
-from patapon.filedata.p1.bnd import BND
+from patapon.filedata.p1.bnd import BND, BNS
+from patapon.filedata.p1.gxx import Gxx
+from patapon.filedata.p1.gxt import GXT
+from patapon.filedata.p1.effectkey import EffectKey
 
-def print_files(bnd: BND, path: str = "/"):
-    file_info = bnd.header.get_ordered_linked_info('partition', 'dataOffset')
-    partitions = bnd.partitions
-    for i in range(bnd.header.nFiles):
-        filename = file_info[i][1].name
-        cur_partition = partitions[i]
+def print_files(obj: BND | BNS, path: str = "/"):
+    if isinstance(obj, BND):
+        file_info = obj.header.get_ordered_linked_info('partition', 'dataOffset')
+        partitions = obj.partitions
+        for i in range(obj.header.nFiles):
+            filename = file_info[i][1].name
+            cur_partition = partitions[i]
 
-        print(f"{cur_partition.__class__.__name__:<32}", path + filename)
-        if type(cur_partition) == BND:
-            print_files(cur_partition, path + filename + '/')
+            print(f"{cur_partition.__class__.__name__:<32}", path + filename)
+            if isinstance(cur_partition, (BND, BNS)):
+                print_files(cur_partition, path + filename + '/')
+    else:
+        partitions = obj.partitions
+        for i in range(obj.header.nFiles):
+            cur_partition = partitions[i]
+            
+            if isinstance(cur_partition, BND):
+                extension = ".bnd"
+            elif isinstance(cur_partition, Gxx):
+                extension = ".gxx"
+            elif isinstance(cur_partition, GXT):
+                extension = ".gxt"
+            elif isinstance(cur_partition, EffectKey):
+                extension = ".effect2"
+            else:
+                extension = ".unk"
+
+            print(f"{cur_partition.__class__.__name__:<32}", path + f"[{i}]" + extension)
 
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\paramlist.bnd"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\localdata.bnd"
@@ -64,13 +85,27 @@ def print_files(bnd: BND, path: str = "/"):
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\s_a_actor.arc"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\actorresourcenode.bnd"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\layoutlist.layl"
-filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\modellist.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\modellist.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\texturelist.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\scriptlist.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\loadinggroupcmn.bnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\message.nebnd"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@message\\unicodetable.bnd"
+filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\default.bnd"
 with open(filepath, "rb") as file:
     raw = file.read()
     test: BND = BND.from_bytes(raw)
     print(test.header)
     print(f"header size: {hex(test.header.get_byte_size())}")
     print_files(test)
+
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\effect.bin"
+# with open(filepath, "rb") as file:
+#     raw = file.read()
+#     test: BNS = BNS.from_bytes(raw)
+#     print(test.header)
+#     print(f"header size: {hex(test.header.get_byte_size())}")
+#     print_files(test)
         
 from patapon.filedata.p1.gxx import Gxx
 
@@ -120,6 +155,60 @@ from patapon.filedata.p1.gxx import Gxx
 #     offset += len(test.mesh_section.padding)
 
 #     print(f"\nFile Size: {hex(offset)}\n")
+
+from patapon.filedata.p1.gxt import GXT
+
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\nowloading.gxt"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tips_now.gxt"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tisp_push.gxt"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tisp_now2.gxt"
+# with open(filepath, 'rb') as file:
+#     offset = 0
+#     raw = file.read()
+#     test: GXT = GXT.from_bytes(raw)
+#     print(test.file_header)
+#     offset += test.file_header.get_byte_size()
+    
+#     print(f"\nUnknown 1 header Offset: {hex(offset)}\n")
+#     print(test.unknown_1_header)
+#     offset += test.unknown_1_header.get_byte_size()
+
+#     print(f"\nUnknown 1 body Offset: {hex(offset)}\n")
+#     print(test.unknown_1_body)
+#     offset += test.unknown_1_body.get_byte_size()
+
+#     print(f"\nImage header Offset: {hex(offset)}\n")
+#     print(test.image_header)
+#     offset += test.image_header.get_byte_size()
+
+#     print(f"\nImage body Offset: {hex(offset)}\n")
+#     print(test.image_body)
+#     offset += test.image_body.get_byte_size()
+
+#     print(f"\nPalette header Offset: {hex(offset)}\n")
+#     print(test.palette_header)
+#     offset += test.palette_header.get_byte_size()
+
+#     print(f"\nPalette body Offset: {hex(offset)}\n")
+#     print(test.palette_body)
+#     offset += test.palette_body.get_byte_size()
+
+#     print(f"\nMotion Info header Offset: {hex(offset)}\n")
+#     print(test.motion_info_header)
+#     offset += test.motion_info_header.get_byte_size()
+
+#     print(f"\nMotion Info body Offset: {hex(offset)}\n")
+#     print(test.motion_info_body)
+#     offset += test.motion_info_body.get_byte_size()
+
+#     print(f"\nTexture Info Offset: {hex(offset)}\n")
+#     print(test.texture_info)
+#     offset += test.texture_info.get_byte_size()
+
+#     print(f"\nFile Size: {hex(offset)}")
+
+#     test.render_image().save(".\\test.png")
+
 
 
 # import gzip

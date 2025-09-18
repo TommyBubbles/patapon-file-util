@@ -106,6 +106,6 @@ def get_dataclass_from_filename(name: str) -> tuple[type[PataponDataClass]|None,
         c = re.compile(pattern)
         m = c.match(name)
         if m is not None:
-            return dfp_cls, 3
+            return dfp_cls, 1
 
     return cls, 0
