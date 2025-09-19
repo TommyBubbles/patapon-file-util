@@ -10,12 +10,14 @@ from patapon.filedata.p1.param.hiteffecttableparam import (
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
 def hit_effect_table_param_header() -> HitEffectTableParamHeader:
     return HitEffectTableParamHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x40,
         0.800000011920929,
         0x2,
@@ -75,7 +77,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\hiteffecttableparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: HitEffectTableParam = HitEffectTableParam.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: HitEffectTableParam = HitEffectTableParam.from_bytes(data_stream)
         assert HitEffectTableParam.verify_filler(actual)
 
     assert actual.get_byte_size() == 0xD00

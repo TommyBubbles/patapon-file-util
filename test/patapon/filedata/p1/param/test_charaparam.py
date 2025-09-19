@@ -9,13 +9,15 @@ from patapon.filedata.p1.param import DamageParam
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 class Test_BasesDataCharaParam:
     @fixture
     def chara_param_header(self) -> BasesDataCharaParamHeader:
         return BasesDataCharaParamHeader(
-            b'YGF_GFP\x00'.decode(),
+            b'YGF_GFP\x00',
             0x40,
             0.800000011920929,
             0x1,
@@ -112,7 +114,8 @@ class Test_BasesDataCharaParam:
         file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@basesdata\\@default\\@loadinggroupcmn\\@paramlist\\charaparam.dat"
         with open(file_name, "rb") as file:
             raw = file.read()
-            actual: BasesDataCharaParam = BasesDataCharaParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: BasesDataCharaParam = BasesDataCharaParam.from_bytes(data_stream)
             assert BasesDataCharaParam.verify_filler(actual)
 
         assert actual.header.get_byte_size() == 0x40
@@ -275,7 +278,8 @@ class Test_CharaParam:
             ):
         with open(file_one, "rb") as file:
             raw = file.read()
-            actual: CharaParam = CharaParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: CharaParam = CharaParam.from_bytes(data_stream)
             assert CharaParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x400
@@ -288,7 +292,8 @@ class Test_CharaParam:
             ):
         with open(file_two, "rb") as file:
             raw = file.read()
-            actual: CharaParam = CharaParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: CharaParam = CharaParam.from_bytes(data_stream)
             assert CharaParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x400

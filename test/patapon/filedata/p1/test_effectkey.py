@@ -4,12 +4,12 @@ sys.path.insert(0, ".\\src")
 from patapon.filedata.p1.effectkey import (
     EffectKey,
     EffectKeyHeader,
-    EffectKeySectionElement,
     EffectKeyData,
     RectangleUC,
-    ParticleParamElement,
-    ParticleParam
+    ParticleParamElement
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 class Test_FileOne:
@@ -21,7 +21,7 @@ class Test_FileOne:
     @fixture
     def effect_key_header(self) -> EffectKeyHeader:
         return EffectKeyHeader(
-            b'EFFECT2\x00'.decode(),
+            b'EFFECT2\x00',
             464,
             2,
             464,
@@ -148,7 +148,8 @@ class Test_FileOne:
             ):
         with open(filepath, "rb") as file:
             raw = file.read()
-            actual: EffectKey = EffectKey.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: EffectKey = EffectKey.from_bytes(data_stream)
             assert EffectKey.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x1D0

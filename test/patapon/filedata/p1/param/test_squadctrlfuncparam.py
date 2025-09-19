@@ -9,12 +9,14 @@ from patapon.filedata.p1.param.squadctrlfuncparam import (
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
 def squad_ctrl_func_param_header() -> SquadCtrlFuncParamHeader:
     return SquadCtrlFuncParamHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x40,
         0.800000011920929,
         0x1,
@@ -80,7 +82,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@gamedata\\@default\\@loadinggroupcmn\\@paramlist\\squadctrlfuncparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: SquadCtrlFuncParam = SquadCtrlFuncParam.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: SquadCtrlFuncParam = SquadCtrlFuncParam.from_bytes(data_stream)
         assert SquadCtrlFuncParam.verify_filler(actual)
 
 

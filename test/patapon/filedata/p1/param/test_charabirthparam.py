@@ -10,12 +10,14 @@ from patapon.filedata.p1.param.charabirthparam import (
 from patapon.filedata.p1.param.generic import (
      GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
 def chara_birth_param_header() -> CharaBirthParamHeader:
     return CharaBirthParamHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x40,
         0.800000011920929,
         0x2,
@@ -99,7 +101,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\charabirthparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: CharaBirthParam = CharaBirthParam.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: CharaBirthParam = CharaBirthParam.from_bytes(data_stream)
         assert CharaBirthParam.verify_filler(actual)
 
     assert actual.get_byte_size() == 0xAD60

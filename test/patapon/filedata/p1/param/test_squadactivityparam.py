@@ -11,12 +11,14 @@ from patapon.filedata.p1.param import DamageParam
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
 def squad_activity_param_header() -> SquadActivityParamHeader:
     return SquadActivityParamHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x40,
         0.800000011920929,
         0x2,
@@ -116,7 +118,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@gamedata\\@default\\@loadinggroupcmn\\@paramlist\\squadactivityparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: SquadActivityParam = SquadActivityParam.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: SquadActivityParam = SquadActivityParam.from_bytes(data_stream)
         assert SquadActivityParam.verify_filler(actual)
 
 

@@ -48,6 +48,7 @@ from patapon.filedata.p1.bnd import BND, BNS
 from patapon.filedata.p1.gxx import Gxx
 from patapon.filedata.p1.gxt import GXT
 from patapon.filedata.p1.effectkey import EffectKey
+from patapon.filedata.patapon_data_class import PataponDataIO
 
 def print_files(obj: BND | BNS, path: str = "/"):
     if isinstance(obj, BND):
@@ -94,7 +95,8 @@ def print_files(obj: BND | BNS, path: str = "/"):
 filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\default.bnd"
 with open(filepath, "rb") as file:
     raw = file.read()
-    test: BND = BND.from_bytes(raw)
+    data_stream = PataponDataIO(raw)
+    test: BND = BND.from_bytes(data_stream)
     print(test.header)
     print(f"header size: {hex(test.header.get_byte_size())}")
     print_files(test)
@@ -102,7 +104,8 @@ with open(filepath, "rb") as file:
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\effect.bin"
 # with open(filepath, "rb") as file:
 #     raw = file.read()
-#     test: BNS = BNS.from_bytes(raw)
+#     data_stream = PataponDataIO(raw)
+#     test: BNS = BNS.from_bytes(data_stream)
 #     print(test.header)
 #     print(f"header size: {hex(test.header.get_byte_size())}")
 #     print_files(test)

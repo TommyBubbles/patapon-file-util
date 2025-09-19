@@ -8,7 +8,8 @@ from patapon.filedata.patapon_data_class import (
     PataponDataClassHeader,
     PataponDataClassElement,
     FieldMetadata,
-    FieldTag
+    FieldTag,
+    PataponDataIO
 )
 import patapon.filedata.p1.param as param
 from .unknown import UnknownDataClass
@@ -57,7 +58,7 @@ def align_header(alignment: int, obj: PataponDataClass):
 
 @dataclass
 class BNDHeader(PataponDynamicDataClass, PataponDataClassHeader):
-    magic: str = field(default="BND", metadata={"meta": FieldMetadata("string", 0, size=0x4)})
+    magic: bytes = field(default=b"BND", metadata={"meta": FieldMetadata("bytes", 0, size=0x4)})
     flag: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
     alignSize: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2), "tags": [FieldTag("alignment", "source")]})
     partitionInfoOffset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
@@ -112,7 +113,7 @@ class BNDHeader(PataponDynamicDataClass, PataponDataClassHeader):
         return ordered_linked_info
 
 
-def get_class_by_magic(magic: str, file_type: int, filename: str = "") -> type[PataponDataClass]:
+def get_class_by_magic(magic: bytes, file_type: int, filename: str = "") -> type[PataponDataClass]:
     param_magic = GenericParamHeader.__dataclass_fields__['magic'].default
     gxx_magic = GxxHeader.__dataclass_fields__['magic'].default
     gxt_magic = GXTHeader.__dataclass_fields__['magic'].default
@@ -133,7 +134,7 @@ def get_class_by_magic(magic: str, file_type: int, filename: str = "") -> type[P
     else:
         temp_cls, cls_type = param.get_dataclass_from_filename(filename)
         if temp_cls is not None:
-            if (magic == param_magic and cls_type == 1) or cls_type == 2:
+            if (magic.startswith(param_magic) and cls_type == 1) or cls_type == 2:
                 cls = temp_cls
             else:
                 cls = UnknownDataClass
@@ -148,7 +149,7 @@ class BND(PataponDynamicDataClass):
     partitions: list[PataponDataClass] = field(default_factory=list[PataponDataClass], metadata={"meta": FieldMetadata("bnd_files", 1), "tags": [FieldTag("file", "body")]})
 
 
-    def process(self, raw: bytes) -> tuple[int,list[PataponDataClass]]:
+    def process(self, data: PataponDataIO, file_offset: int = 0, section_size: int = -1) -> tuple[int,list[PataponDataClass]]:
         linked_info = self.header.get_ordered_linked_info('partition', 'dataOffset')
 
         new_value: list[PataponDataClass] = []
@@ -161,28 +162,19 @@ class BND(PataponDynamicDataClass):
             filename = info[1].name.strip("\x00")
 
             # extract the magic bit from the file, if it exists
-            magic = ''
-            j = 0
-            next_char = raw[offset:offset+1]
-            while next_char != b'\x00' or j > 8:
-                try:
-                    magic += next_char.decode()
-                except UnicodeDecodeError:
-                    break
-                j += 1
-                next_char = raw[offset+j:offset+j+1]
+            magic = data.read(file_offset+offset, 0x10)
             
             # get the filetype (only applicable to BND and BNS)
-            filetype = int.from_bytes(raw[offset+4:offset+8], 'little')
+            filetype = int.from_bytes(data.read(file_offset+offset+4, 4), 'little')
 
             # get the class to use for data extraction
             cls = get_class_by_magic(magic, filetype, filename)
             size = partition_info.dataSize
             try:
-                new_value.append(cls.from_bytes(raw[offset:offset+size]))
+                new_value.append(cls.from_bytes(data, file_offset=file_offset+offset, section_size=size))
             except:
                 print(f"issue with processing file {filename}")
-                new_value.append(UnknownDataClass.from_bytes(raw[offset:offset+size]))
+                new_value.append(UnknownDataClass.from_bytes(data, file_offset=file_offset+offset, section_size=size))
             
             alignment = self.header.alignSize
             offset += size
@@ -203,7 +195,7 @@ class BNSPartitionInfo(PataponStaticDataClass, PataponDataClassElement):
 
 @dataclass
 class BNSHeader(PataponDynamicDataClass, PataponDataClassHeader):
-    magic: str = field(default="BND", metadata={"meta": FieldMetadata("string", 0, size=0x4)})
+    magic: bytes = field(default=b"BND", metadata={"meta": FieldMetadata("bytes", 0, size=0x4)})
     flag: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
     alignSize: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 2), "tags": [FieldTag("alignment", "source")]})
     filler_1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3, count=2)})
@@ -222,7 +214,7 @@ class BNS(PataponDynamicDataClass):
     partitions: list[PataponDataClass] = field(default_factory=list[PataponDataClass], metadata={"meta": FieldMetadata("bnd_files", 1), "tags": [FieldTag("file", "body")]})
 
 
-    def process(self, raw: bytes) -> tuple[int,list[PataponDataClass]]:
+    def process(self, data: PataponDataIO, file_offset: int = 0, section_size: int = -1) -> tuple[int,list[PataponDataClass]]:
         partition_info = self.header.partition_info
 
         new_value: list[PataponDataClass] = []
@@ -231,29 +223,20 @@ class BNS(PataponDynamicDataClass):
         for info in partition_info:
             cls: type[PataponDataClass]
 
-            # extract the magic bit from the file, if it exists
-            magic = ''
-            j = 0
-            next_char = raw[offset:offset+1]
-            while next_char != b'\x00' or j > 8:
-                try:
-                    magic += next_char.decode()
-                except UnicodeDecodeError:
-                    break
-                j += 1
-                next_char = raw[offset+j:offset+j+1]
+            # grab the first 0x10 bytes from the file to check for magic
+            magic = data.read(file_offset+offset, 0x10)
 
             # get the filetype (only applicable to BND and BNS)
-            filetype = int.from_bytes(raw[offset+4:offset+8], 'little')
+            filetype = int.from_bytes(data.read(file_offset+offset+4, 4), 'little')
 
             # get the class to use for data extraction
             cls = get_class_by_magic(magic, filetype)
             size = info.partition_size
             try:
-                new_value.append(cls.from_bytes(raw[offset:offset+size]))
+                new_value.append(cls.from_bytes(data, file_offset=file_offset+offset, section_size=size))
             except:
                 print(f"issue with processing file at {hex(info.offset)}")
-                new_value.append(UnknownDataClass.from_bytes(raw[offset:offset+size]))
+                new_value.append(UnknownDataClass.from_bytes(data, file_offset=file_offset+offset, section_size=size))
             
             alignment = self.header.alignSize
             offset += size

@@ -2,6 +2,8 @@ from pytest import fixture
 import sys
 sys.path.insert(0, ".\\src")
 from patapon.filedata.p1.param import ActorParam
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 def test_verify_datafield_pos():
@@ -48,7 +50,8 @@ class Test_FileOne:
             ):
         with open(file_path, "rb") as file:
             raw = file.read()
-            actual: ActorParam = ActorParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: ActorParam = ActorParam.from_bytes(data_stream)
             assert ActorParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x200
@@ -96,7 +99,8 @@ class Test_FileTwo:
             ):
         with open(file_path, "rb") as file:
             raw = file.read()
-            actual: ActorParam = ActorParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: ActorParam = ActorParam.from_bytes(data_stream)
             assert ActorParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x200

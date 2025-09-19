@@ -13,7 +13,7 @@ from ..patapon_data_class import (
 
 @dataclass
 class EffectKeyHeader(PataponStaticDataClass, PataponDataClassHeader):
-    magic: str = field(default="EFFECT2", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
+    magic: bytes = field(default=b"EFFECT2", metadata={"meta": FieldMetadata("bytes", 0, size=0x8)})
     next: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
     nKeyData: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int16", 2), "tags": [FieldTag("key_data_count", "source")]})
     size_1: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int16", 3)})

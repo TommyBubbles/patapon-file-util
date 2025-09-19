@@ -11,12 +11,14 @@ from patapon.filedata.p1.param.carnivalpowerevalutateparam import (
 from patapon.filedata.p1.param.generic import (
      GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
 def carnival_power_evalutate_param_header() -> CarnivalPowerEvalutateParamHeader:
     return CarnivalPowerEvalutateParamHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x80,
         0.800000011920929,
         0x3,
@@ -110,7 +112,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\carnivalpowerevalutateparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: CarnivalPowerEvalutateParam = CarnivalPowerEvalutateParam.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: CarnivalPowerEvalutateParam = CarnivalPowerEvalutateParam.from_bytes(data_stream)
         assert CarnivalPowerEvalutateParam.verify_filler(actual)
 
     assert actual.get_byte_size() == 0x300

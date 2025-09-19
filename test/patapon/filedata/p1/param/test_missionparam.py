@@ -9,13 +9,15 @@ from patapon.filedata.p1.param.missionparam import (
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 class Test_SystemDataMissionParam:
     @fixture
     def mission_param_header(self) -> SystemDataMissionParamHeader:
         return SystemDataMissionParamHeader(
-            b'YGF_GFP\x00'.decode(),
+            b'YGF_GFP\x00',
             0x40,
             0.800000011920929,
             0x2,
@@ -86,7 +88,8 @@ class Test_SystemDataMissionParam:
         file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\missionparam.dat"
         with open(file_name, "rb") as file:
             raw = file.read()
-            actual: SystemDataMissionParam = SystemDataMissionParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: SystemDataMissionParam = SystemDataMissionParam.from_bytes(data_stream)
             assert SystemDataMissionParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x13B40
@@ -173,7 +176,8 @@ class Test_MissionParam:
             ):
         with open(file_one, "rb") as file:
             raw = file.read()
-            actual: MissionParam = MissionParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: MissionParam = MissionParam.from_bytes(data_stream)
             assert MissionParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x400
@@ -186,7 +190,8 @@ class Test_MissionParam:
             ):
         with open(file_two, "rb") as file:
             raw = file.read()
-            actual: MissionParam = MissionParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: MissionParam = MissionParam.from_bytes(data_stream)
             assert MissionParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x400

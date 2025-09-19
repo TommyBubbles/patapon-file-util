@@ -10,12 +10,14 @@ from patapon.filedata.p1.param.unitlayoutparam_e import (
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
 def squad_ctrl_func_param_header() -> UnitLayoutParamEHeader:
     return UnitLayoutParamEHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x40,
         0.800000011920929,
         0x3,
@@ -98,7 +100,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@gamedata\\@default\\@loadinggroupcmn\\@paramlist\\unitlayoutparam_e.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: UnitLayoutParamE = UnitLayoutParamE.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: UnitLayoutParamE = UnitLayoutParamE.from_bytes(data_stream)
         assert UnitLayoutParamE.verify_filler(actual)
 
 

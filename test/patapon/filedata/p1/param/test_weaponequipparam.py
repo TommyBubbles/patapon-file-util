@@ -9,6 +9,7 @@ from patapon.filedata.p1.param import DamageParam
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
 
 
 
@@ -16,7 +17,7 @@ class Test_WeaponParam:
     @fixture
     def weapon_param_header(self) -> WeaponParamHeader:
         return WeaponParamHeader(
-            b'YGF_GFP\x00'.decode(),
+            b'YGF_GFP\x00',
             0x40,
             0.800000011920929,
             0x1,
@@ -89,7 +90,8 @@ class Test_WeaponParam:
         file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@basesdata\\@default\\@loadinggroupcmn\\@paramlist\\weaponparam.dat"
         with open(file_name, "rb") as file:
             raw = file.read()
-            actual: WeaponParam = WeaponParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: WeaponParam = WeaponParam.from_bytes(data_stream)
             assert WeaponParam.verify_filler(actual)
 
         assert actual.header.get_byte_size() == 0x40
@@ -205,7 +207,8 @@ class Test_EquipParam:
             ):
         with open(file_one, "rb") as file:
             raw = file.read()
-            actual: EquipParam = EquipParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: EquipParam = EquipParam.from_bytes(data_stream)
             assert EquipParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x1A0
@@ -218,7 +221,8 @@ class Test_EquipParam:
             ):
         with open(file_two, "rb") as file:
             raw = file.read()
-            actual: EquipParam = EquipParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: EquipParam = EquipParam.from_bytes(data_stream)
             assert EquipParam.verify_filler(actual)
 
         assert actual.get_byte_size() == 0x1A0

@@ -13,12 +13,14 @@ from patapon.filedata.p1.param.scenelayoutparam import (
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
 def scene_layout_param_header() -> SceneLayoutParamHeader:
     return SceneLayoutParamHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x40,
         0.800000011920929,
         0x4,
@@ -157,7 +159,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@layoutlist\\scenelayoutparam00.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: SceneLayoutParam = SceneLayoutParam.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: SceneLayoutParam = SceneLayoutParam.from_bytes(data_stream)
         assert SceneLayoutParam.verify_filler(actual)
 
     assert actual.get_byte_size() == 0x14C0

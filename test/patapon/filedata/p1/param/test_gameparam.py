@@ -9,6 +9,8 @@ from patapon.filedata.p1.param.gameparam import (
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 @fixture
@@ -22,7 +24,7 @@ def game_param_element() -> GameParamInfoElement:
 @fixture
 def game_param_header() -> GameParamHeader:
     return GameParamHeader(
-        b'YGF_GFP\x00'.decode(),
+        b'YGF_GFP\x00',
         0x40,
         0.800000011920929,
         0x1,
@@ -53,7 +55,8 @@ def test_from_bytes(
     file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@paramlist\\gameparam.dat"
     with open(file_name, "rb") as file:
         raw = file.read()
-        actual: GameParam = GameParam.from_bytes(raw)
+        data_stream = PataponDataIO(raw)
+        actual: GameParam = GameParam.from_bytes(data_stream)
         assert GameParam.verify_filler(actual)
 
     assert actual.get_byte_size() == 0xC0

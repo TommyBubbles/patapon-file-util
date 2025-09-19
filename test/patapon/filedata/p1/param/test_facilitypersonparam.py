@@ -13,6 +13,8 @@ from patapon.filedata.p1.param.facilitypersonparam import (
 from patapon.filedata.p1.param.generic import (
     GenericParamHeaderPartitionInfo
 )
+from patapon.filedata.patapon_data_class import PataponDataIO
+
 
 
 def test_verify_datafield_pos():
@@ -23,7 +25,7 @@ class Test_FacilityParam:
     @fixture
     def facility_param_header(self) -> ParamHeader:
         return ParamHeader(
-            b'YGF_GFP\x00'.decode(),
+            b'YGF_GFP\x00',
             0x40,
             0.800000011920929,
             0x3,
@@ -138,7 +140,8 @@ class Test_FacilityParam:
         file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@basesdata\\@default\\@loadinggroupcmn\\@paramlist\\facilityparam.dat"
         with open(file_name, "rb") as file:
             raw = file.read()
-            actual: FacilityPersonParam = FacilityPersonParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: FacilityPersonParam = FacilityPersonParam.from_bytes(data_stream)
             assert FacilityPersonParam.verify_filler(actual)
 
         assert actual.header.get_byte_size() == 0x40
@@ -161,7 +164,7 @@ class Test_PersonParam:
     @fixture
     def person_param_header(self) -> ParamHeader:
         return ParamHeader(
-            b'YGF_GFP\x00'.decode(),
+            b'YGF_GFP\x00',
             0x40,
             0.800000011920929,
             0x3,
@@ -276,7 +279,8 @@ class Test_PersonParam:
         file_name = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@basesdata\\@default\\@loadinggroupcmn\\@paramlist\\personparam.dat"
         with open(file_name, "rb") as file:
             raw = file.read()
-            actual: FacilityPersonParam = FacilityPersonParam.from_bytes(raw)
+            data_stream = PataponDataIO(raw)
+            actual: FacilityPersonParam = FacilityPersonParam.from_bytes(data_stream)
             assert FacilityPersonParam.verify_filler(actual)
 
         assert actual.header.get_byte_size() == 0x40

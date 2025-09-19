@@ -27,7 +27,7 @@ class GenericParamHeaderPartitionInfo(PataponStaticDataClass, PataponDataClassEl
 
 @dataclass
 class GenericParamHeader(PataponDynamicDataClass, PataponDataClassHeader):
-    magic: str = field(default="YGF_GFP", metadata={"meta": FieldMetadata("string", 0, size=0x8)})
+    magic: bytes = field(default=b"YGF_GFP", metadata={"meta": FieldMetadata("bytes", 0, size=0x8)})
     alignment: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1), "tags": [FieldTag("alignment", "source")]})
     version: float = field(default=0.0, metadata={"meta": FieldMetadata("float", 2)})
     partition_count: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3), "tags": [FieldTag("partition_count", "source")]})

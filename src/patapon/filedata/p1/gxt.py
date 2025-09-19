@@ -15,7 +15,7 @@ from ..patapon_data_class import (
 
 @dataclass
 class GXTHeader(PataponDataClassHeader, PataponStaticDataClass):
-    magic: str = field(default="XXG.01.0MIG.", metadata={"meta": FieldMetadata("string", 0, size=0x10)})
+    magic: bytes = field(default=b"XXG.01.0MIG.", metadata={"meta": FieldMetadata("bytes", 0, size=0x10)})
     offset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 1)})
     filler_1: list[int] = field(default_factory=list[int], metadata={"meta": FieldMetadata("unsigned_int", 2, count=3)})
     texture_info_offset: int = field(default=0, metadata={"meta": FieldMetadata("unsigned_int", 3)})
