@@ -64,7 +64,7 @@ class Test_FileOne:
 
 
     @fixture
-    def particle_param_first_element(self):
+    def particle_param_first_element(self) -> ParticleParamElement:
         return ParticleParamElement(
             b'2\x08\x00\x00\x02\x07\x12\x88',
             0,

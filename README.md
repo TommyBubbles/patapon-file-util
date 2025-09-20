@@ -1,7 +1,6 @@
 # TODO:
 ## - make the file header available to all classes within the main class
 ## - combine PataponStaticDataClass and PataponDynamicDataClass into one class (PataponDataClass)
-##   * from_bytes
 ##   * implement the to_bytes logic for dynamic data and format_string (potentially factor out instead)
 ## - speed up files processing
 ##   * use a file instead of raw bytes to help with read speed (mmap, fileinput, open)

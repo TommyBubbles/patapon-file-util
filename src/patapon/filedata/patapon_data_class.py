@@ -16,7 +16,7 @@ class FieldType(Enum):
     unsigned_int8 = auto()
     float = auto()
     dataclass = auto()
-    bnd_files = auto()
+    custom = auto()
 
 
 class FieldTagType(Enum):
@@ -142,24 +142,25 @@ class StreamType(Enum):
     
 
 from mmap import mmap
-from io import FileIO
+from io import BufferedReader
 from os import SEEK_END
+
 
 class PataponDataIO:
     def __init__(self,
-            stream: bytes | mmap | FileIO,
+            stream: bytes | mmap | BufferedReader,
             ):
         self.stream = stream
         if isinstance(self.stream, bytes):
             self.stream_type = StreamType.bytes
         elif isinstance(self.stream, mmap):
             self.stream_type = StreamType.mmap
-        elif isinstance(self.stream, FileIO):
+        elif isinstance(self.stream, BufferedReader):
             self.stream_type = StreamType.fileio
         else:
             raise TypeError(f"Unsupported stream type {type(self.stream)} passed to PataponDataIO.")
-        
-        
+
+
     def read(self, offset: int, size: int) -> bytes:
         match self.stream_type:
             case StreamType.bytes:
@@ -172,7 +173,9 @@ class PataponDataIO:
                 return self.stream[offset:offset+size]
             case StreamType.fileio:
                 self.stream.seek(offset)
-                return self.stream.read(size)
+                if size != -1:
+                    return self.stream.read(size)
+                return self.stream.read()
             case _:
                 return b''
             
@@ -189,8 +192,7 @@ class PataponDataIO:
             case _:
                 return 0
 
-            
-    
+
 
 class PataponDataClassHeader:
     _start_pos: int
@@ -296,8 +298,8 @@ class PataponDataClass:
             else:
                 count = metadata.count
 
-            if field_type == FieldType.bnd_files:
-                data_size, new_value = new_inst.process(data, file_offset=file_offset+field_offset)
+            if field_type == FieldType.custom:
+                data_size, new_value = new_inst.process(data, file_offset=file_offset+field_offset, section_size=section_size-field_offset)
                 pass
             elif field_type == FieldType.dataclass:
                 field_class: type[PataponDataClass]

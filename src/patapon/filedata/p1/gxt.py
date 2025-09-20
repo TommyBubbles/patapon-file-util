@@ -1,5 +1,4 @@
 from PIL import Image
-from math import sqrt
 
 from dataclasses import field, dataclass
 from ..patapon_data_class import (

@@ -43,41 +43,17 @@ sys.path.insert(0, ".\\src")
 #     with open(".\\replay_missionscript.pac", "wb") as output:
 #         output.write(new_file_contents)
 
+from mmap import mmap, ACCESS_READ
 
 from patapon.filedata.p1.bnd import BND, BNS
+from patapon.filedata.p1.bnd import GZIP
 from patapon.filedata.p1.gxx import Gxx
 from patapon.filedata.p1.gxt import GXT
 from patapon.filedata.p1.effectkey import EffectKey
+from patapon.filedata.p1.windpath import WindPath
 from patapon.filedata.patapon_data_class import PataponDataIO
 
-def print_files(obj: BND | BNS, path: str = "/"):
-    if isinstance(obj, BND):
-        file_info = obj.header.get_ordered_linked_info('partition', 'dataOffset')
-        partitions = obj.partitions
-        for i in range(obj.header.nFiles):
-            filename = file_info[i][1].name
-            cur_partition = partitions[i]
 
-            print(f"{cur_partition.__class__.__name__:<32}", path + filename)
-            if isinstance(cur_partition, (BND, BNS)):
-                print_files(cur_partition, path + filename + '/')
-    else:
-        partitions = obj.partitions
-        for i in range(obj.header.nFiles):
-            cur_partition = partitions[i]
-            
-            if isinstance(cur_partition, BND):
-                extension = ".bnd"
-            elif isinstance(cur_partition, Gxx):
-                extension = ".gxx"
-            elif isinstance(cur_partition, GXT):
-                extension = ".gxt"
-            elif isinstance(cur_partition, EffectKey):
-                extension = ".effect2"
-            else:
-                extension = ".unk"
-
-            print(f"{cur_partition.__class__.__name__:<32}", path + f"[{i}]" + extension)
 
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\paramlist.bnd"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\localdata.bnd"
@@ -92,14 +68,24 @@ def print_files(obj: BND | BNS, path: str = "/"):
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\loadinggroupcmn.bnd"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\message.nebnd"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@message\\unicodetable.bnd"
-filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\default.bnd"
-with open(filepath, "rb") as file:
-    raw = file.read()
-    data_stream = PataponDataIO(raw)
-    test: BND = BND.from_bytes(data_stream)
-    print(test.header)
-    print(f"header size: {hex(test.header.get_byte_size())}")
-    print_files(test)
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\default.bnd"
+# with open(filepath, "rb") as file:
+#     with mmap(file.fileno(), length=0, access=ACCESS_READ) as mm:
+#         data_stream = PataponDataIO(mm)
+#         test: BND = BND.from_bytes(data_stream)
+#         print(test.header)
+#         print(f"header size: {hex(test.header.get_byte_size())}")
+#         print_files(test)
+
+# with open(filepath, "rb") as file:
+#     data_stream = PataponDataIO(file)
+#     test: BND = BND.from_bytes(data_stream)
+#     print(test.header)
+#     print(f"header size: {hex(test.header.get_byte_size())}")
+#     print_files(test)
+
+
+
 
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\effect.bin"
 # with open(filepath, "rb") as file:
@@ -109,17 +95,17 @@ with open(filepath, "rb") as file:
 #     print(test.header)
 #     print(f"header size: {hex(test.header.get_byte_size())}")
 #     print_files(test)
-        
-from patapon.filedata.p1.gxx import Gxx
 
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@actorresourcenode\\@s_a_actor\\@model\\chr_dmy.gxx"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\nowloading.gxx"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tips_now.gxx"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tips_push.gxx"
+# filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@message\\@window\\balloon_window00.gxx"
 # with open(filepath, 'rb') as file:
 #     offset = 0
 #     raw = file.read()
-#     test: Gxx = Gxx.from_bytes(raw)
+#     data_stream = PataponDataIO(raw)
+#     test: Gxx = Gxx.from_bytes(data_stream)
 #     print(test.header)
 #     offset += test.header.get_byte_size()
     
@@ -158,8 +144,6 @@ from patapon.filedata.p1.gxx import Gxx
 #     offset += len(test.mesh_section.padding)
 
 #     print(f"\nFile Size: {hex(offset)}\n")
-
-from patapon.filedata.p1.gxt import GXT
 
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\nowloading.gxt"
 # filepath = "D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\@systemdata\\@default\\@loadinggroupcmn\\@modellist\\@loading\\tips_now.gxt"
@@ -212,10 +196,11 @@ from patapon.filedata.p1.gxt import GXT
 
 #     test.render_image().save(".\\test.png")
 
-
-
-# import gzip
-
-# with gzip.open('D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\basesdata.bnd', 'rb') as file:
-#     file_contents = file.read(0x25a7d8)
-#     print(file_contents[:0x4])
+# filepath = 'D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\systemdata.bnd'
+filepath = 'D:\\Patapon\\Patapon Stuff\\Patapon 1 US\\@DATA_CMN\\loadinggroup\\gamedata.bnd'
+with open(filepath, "rb") as file:
+    raw = file.read()
+    data_stream = PataponDataIO(raw)
+    test: GZIP = GZIP.from_bytes(data_stream)
+    print(f"sub_file size: {hex(test.sub_file.get_byte_size())}")
+    test.print_files()

@@ -165,7 +165,7 @@ def get_bone_name_padding(bone_names: list[str]):
         cur_size += len(name)
     if cur_size % 4 == 0:
         return alignment - 4
-    return alignment - (cur_size % 4)
+    return alignment - (cur_size % alignment)
 
 
 @dataclass

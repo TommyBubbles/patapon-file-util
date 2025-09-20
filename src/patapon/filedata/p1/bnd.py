@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from zlib import crc32
 from typing import Literal
+import gzip
+import io
 from patapon.filedata.patapon_data_class import (
     PataponDataClass,
     PataponStaticDataClass,
@@ -17,7 +19,7 @@ from .param.generic import GenericParamHeader
 from .gxx import GxxHeader, Gxx
 from .gxt import GXTHeader, GXT
 from .effectkey import EffectKeyHeader, EffectKey
-
+from .windpath import WindPathHeader, WindPath
 
 
 @dataclass
@@ -119,6 +121,7 @@ def get_class_by_magic(magic: bytes, file_type: int, filename: str = "") -> type
     gxt_magic = GXTHeader.__dataclass_fields__['magic'].default
     bnd_magic = BNDHeader.__dataclass_fields__['magic'].default
     effect2_magic = EffectKeyHeader.__dataclass_fields__['magic'].default
+    windpath_magic = WindPathHeader.__dataclass_fields__['magic'].default
 
     if magic.startswith(bnd_magic):
         if file_type == 1:
@@ -131,6 +134,8 @@ def get_class_by_magic(magic: bytes, file_type: int, filename: str = "") -> type
         cls = GXT
     elif magic.startswith(effect2_magic):
         cls = EffectKey
+    elif magic.startswith(windpath_magic):
+        cls = WindPath
     else:
         temp_cls, cls_type = param.get_dataclass_from_filename(filename)
         if temp_cls is not None:
@@ -146,7 +151,7 @@ def get_class_by_magic(magic: bytes, file_type: int, filename: str = "") -> type
 @dataclass
 class BND(PataponDynamicDataClass):
     header: BNDHeader = field(default_factory=BNDHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
-    partitions: list[PataponDataClass] = field(default_factory=list[PataponDataClass], metadata={"meta": FieldMetadata("bnd_files", 1), "tags": [FieldTag("file", "body")]})
+    partitions: list[PataponDataClass] = field(default_factory=list[PataponDataClass], metadata={"meta": FieldMetadata("custom", 1), "tags": [FieldTag("file", "body")]})
 
 
     def process(self, data: PataponDataIO, file_offset: int = 0, section_size: int = -1) -> tuple[int,list[PataponDataClass]]:
@@ -172,8 +177,9 @@ class BND(PataponDynamicDataClass):
             size = partition_info.dataSize
             try:
                 new_value.append(cls.from_bytes(data, file_offset=file_offset+offset, section_size=size))
-            except:
+            except Exception as err:
                 print(f"issue with processing file {filename}")
+                print("\t" + f"{err.args[0]}")
                 new_value.append(UnknownDataClass.from_bytes(data, file_offset=file_offset+offset, section_size=size))
             
             alignment = self.header.alignSize
@@ -182,6 +188,18 @@ class BND(PataponDynamicDataClass):
                 offset += alignment - (size % alignment)
 
         return offset, new_value
+
+
+    def print_files(self, path: str = "/"):
+        file_info = self.header.get_ordered_linked_info('partition', 'dataOffset')
+        partitions = self.partitions
+        for i in range(self.header.nFiles):
+            filename = file_info[i][1].name
+            cur_partition = partitions[i]
+
+            print(f"{cur_partition.__class__.__name__:<32}", path + filename)
+            if isinstance(cur_partition, (BND, BNS, GZIP)):
+                cur_partition.print_files(path + filename + '/')
 
 
 
@@ -211,7 +229,7 @@ class BNSHeader(PataponDynamicDataClass, PataponDataClassHeader):
 @dataclass
 class BNS(PataponDynamicDataClass):
     header: BNSHeader = field(default_factory=BNSHeader, metadata={"meta": FieldMetadata("dataclass", 0), "tags": [FieldTag("file", "header")]})
-    partitions: list[PataponDataClass] = field(default_factory=list[PataponDataClass], metadata={"meta": FieldMetadata("bnd_files", 1), "tags": [FieldTag("file", "body")]})
+    partitions: list[PataponDataClass] = field(default_factory=list[PataponDataClass], metadata={"meta": FieldMetadata("custom", 1), "tags": [FieldTag("file", "body")]})
 
 
     def process(self, data: PataponDataIO, file_offset: int = 0, section_size: int = -1) -> tuple[int,list[PataponDataClass]]:
@@ -234,8 +252,9 @@ class BNS(PataponDynamicDataClass):
             size = info.partition_size
             try:
                 new_value.append(cls.from_bytes(data, file_offset=file_offset+offset, section_size=size))
-            except:
+            except Exception as err:
                 print(f"issue with processing file at {hex(info.offset)}")
+                print("\t" + f"{err.args[0]}")
                 new_value.append(UnknownDataClass.from_bytes(data, file_offset=file_offset+offset, section_size=size))
             
             alignment = self.header.alignSize
@@ -244,3 +263,64 @@ class BNS(PataponDynamicDataClass):
                 offset += alignment - (size % alignment)
 
         return offset, new_value
+
+
+    def print_files(self, path: str = "/"):
+        partitions = self.partitions
+        for i in range(self.header.nFiles):
+            cur_partition = partitions[i]
+            
+            if isinstance(cur_partition, BND):
+                extension = ".bnd"
+            elif isinstance(cur_partition, Gxx):
+                extension = ".gxx"
+            elif isinstance(cur_partition, GXT):
+                extension = ".gxt"
+            elif isinstance(cur_partition, EffectKey):
+                extension = ".effect2"
+            elif isinstance(cur_partition, WindPath):
+                extension = ".path"
+            else:
+                extension = ".unk"
+
+            filename = path + f"[{i}]" + extension
+            print(f"{cur_partition.__class__.__name__:<32}", filename)
+            if isinstance(cur_partition, (BND, BNS, GZIP)):
+                cur_partition.print_files(path + filename + '/')
+    
+
+@dataclass
+class GZIP(PataponDataClass):
+    sub_file: PataponDataClass = field(default_factory=PataponDataClass, metadata={"meta": FieldMetadata("custom", 0)})
+
+
+    def process(self, data: PataponDataIO, file_offset: int = 0, section_size: int = -1) -> tuple[int,list[PataponDataClass]]:
+        raw = data.read(file_offset, section_size)
+
+        # we have to implement gzip this way because it needs the size of the file when decompressing
+        # due to a error out if just using the gzip.decompress method. This is because it is trying to read
+        # the gzip footer as another file and the gzip file size may not be acuarate to the real size of
+        # the file due to it being size mod 2**32
+        with gzip.GzipFile(fileobj=io.BytesIO(raw)) as f:
+            contents = f.read(int.from_bytes(raw[-3:], 'little'))
+            gzip_data = PataponDataIO(contents)
+
+
+        # grab the first 0x10 bytes from the file to check for magic
+        magic = gzip_data.read(0, 0x10)
+
+        # get the filetype (only applicable to BND and BNS)
+        filetype = int.from_bytes(gzip_data.read(4, 4), 'little')
+
+        cls = get_class_by_magic(magic, filetype)
+        new_value = cls.from_bytes(gzip_data, file_offset=0, section_size=gzip_data.size())
+
+        return section_size, new_value
+    
+
+    def print_files(self, path: str = "/"):
+        partition = self.sub_file
+        
+        filename = "GZIP"
+        if isinstance(partition, (BND, BNS, GZIP)):
+            partition.print_files(path + filename + '/')
